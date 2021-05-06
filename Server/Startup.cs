@@ -7,12 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Security.Cryptography.X509Certificates;
-using System.IO;
+using IdentityServer.ServerConfiguration;
+using IdentityServer.Data.Identity;
 
 namespace Server
 {
@@ -38,7 +34,7 @@ namespace Server
                 config.UseSqlServer(connectionString);
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>(config => 
+            services.AddIdentity<ApplicationUser, ApplicationRole>(config => 
             {
                 config.Password.RequiredLength = 6;
                 config.Password.RequireDigit = false;
@@ -61,7 +57,7 @@ namespace Server
             //var certificate = new X509Certificate2(filePath, _configuration["CertPassword"].ToString());
 
             services.AddIdentityServer()
-                .AddAspNetIdentity<IdentityUser>()
+                .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
@@ -80,6 +76,8 @@ namespace Server
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            DataBaseInit.InitializeDatabase(app, _configuration);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -94,5 +92,6 @@ namespace Server
                 endpoints.MapDefaultControllerRoute();
             });
         }
+
     }
 }

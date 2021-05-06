@@ -7,7 +7,7 @@ using IdentityServer4.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
-namespace Server
+namespace Server.ServerConfiguration
 {
     public static class IdentityServerConfiguration
     {
@@ -20,26 +20,26 @@ namespace Server
                  new IdentityResources.Profile()
            };
 
-        public static IEnumerable<ApiResource> GetApis() =>
+        public static IEnumerable<ApiResource> GetApis(IConfiguration configuration) =>
             new List<ApiResource>
             {
-                new ApiResource(Configuration["ApiEntraName"].ToString())
+                new ApiResource(configuration["ApiEntraName"].ToString())
             };
 
-        public static IEnumerable<Client> GetClients() =>
+        public static IEnumerable<Client> GetClients(IConfiguration configuration) =>
             new List<Client>
             {
                 new Client
                 {
-                    ClientId = Configuration["ClientId"].ToString(),
+                    ClientId = configuration["ClientId"].ToString(),
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     RequireClientSecret = false,
-                    RedirectUris = { Configuration["AngularClientEntraAppURL"].ToString() },
-                    PostLogoutRedirectUris = { Configuration["AngularClientEntraAppURL"].ToString() },
-                    AllowedCorsOrigins = { Configuration["AngularClientEntraAppURL"].ToString() },
+                    RedirectUris = { configuration["AngularClientEntraAppURL"].ToString() },
+                    PostLogoutRedirectUris = { configuration["AngularClientEntraAppURL"].ToString() },
+                    AllowedCorsOrigins = { configuration["AngularClientEntraAppURL"].ToString() },
                     AllowedScopes = { 
-                        Configuration["ApiEntraName"].ToString(),
+                        configuration["ApiEntraName"].ToString(),
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile
                     },
