@@ -1,4 +1,4 @@
-﻿namespace IdentityServer.Requests
+﻿namespace IdentityServer.Models.Requests
 {
     public class LoginRequestModel
     {

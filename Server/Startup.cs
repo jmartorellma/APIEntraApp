@@ -2,7 +2,6 @@ using IdentityServer.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -40,6 +39,7 @@ namespace Server
                 config.Password.RequireDigit = false;
                 config.Password.RequireNonAlphanumeric = false;
                 config.Password.RequireNonAlphanumeric = false;
+                config.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
@@ -47,8 +47,8 @@ namespace Server
             services.ConfigureApplicationCookie(config => 
             {
                 config.Cookie.Name = "IdentitySever.Cookie";
-                config.LoginPath = "/auth/login";
-                config.LogoutPath = "/auth/logout";
+                config.LoginPath = "/Auth/login";
+                config.LogoutPath = "/Auth/logout";
             });
 
             var assembly = typeof(Startup).Assembly.GetName().Name;
