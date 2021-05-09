@@ -1,24 +1,29 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace APIEntraApp
 {
     public class Startup
     {
+        public readonly IConfiguration _configuration;
+
+        public Startup(
+            IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", config => 
+                .AddJwtBearer("Bearer", config =>
                 {
-                    config.Authority = "https://localhost:44328/";
-                    config.Audience = "api_entra";
+                    config.Authority = _configuration["IdentityServerURL"].ToString();
+                    config.Audience = _configuration["ApiEntraName"].ToString();
+                    config.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
 
             services.AddCors(config => 

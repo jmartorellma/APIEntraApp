@@ -19,7 +19,10 @@ namespace IdentityServer.ServerConfiguration
         public static IEnumerable<ApiResource> GetApis(IConfiguration configuration) =>
             new List<ApiResource>
             {
-                new ApiResource(configuration["ApiEntraName"].ToString())
+                new ApiResource(configuration["ApiEntraName"].ToString(), configuration["ApiEntraName"].ToString())
+                { 
+                    Scopes = { configuration["ApiEntraName"].ToString() }
+                }
             };
 
         public static IEnumerable<ApiScope> GetScopes(IConfiguration configuration) =>

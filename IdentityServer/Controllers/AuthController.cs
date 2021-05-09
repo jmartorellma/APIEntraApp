@@ -43,16 +43,16 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginRequestModel loginModel) 
+        public async Task<IActionResult> Login(LoginViewModel loginModel) 
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid request model");
+                    return View(loginModel);
                 }
 
-                var signInResult = await _signInManager.PasswordSignInAsync(loginModel.UserName, loginModel.Password, false, false);
+                var signInResult = await _signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, false, false);
 
                 if (!signInResult.Succeeded)
                 {                    
@@ -67,8 +67,8 @@ namespace IdentityServer.Controllers
             }            
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterRequestModel registerModel)
+        [HttpGet]
+        public IActionResult Register(string returnUrl)
         {
             try
             {
@@ -77,12 +77,30 @@ namespace IdentityServer.Controllers
                     return BadRequest("Invalid request model");
                 }
 
+                return View(new RegisterViewModel { ReturnUrl = returnUrl });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel registerModel)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(registerModel);
+                }
+
                 ApplicationUser applicationUser = new ApplicationUser
                 {
-                    UserName = registerModel.UserName,
+                    UserName = registerModel.Username,
                     Email = registerModel.Email,
                     PhoneNumber = registerModel.PhoneNumber,
-                    Name = registerModel.UserName,
+                    Name = registerModel.Name,
                     Surname = registerModel.Surname,
                     CreationDate = DateTime.Now,
                     IsActive = true
@@ -95,9 +113,17 @@ namespace IdentityServer.Controllers
                     return StatusCode(500, createResult.Errors);
                 }
 
+                var user = await _userManager.FindByEmailAsync(applicationUser.Email);
+                var roleresult = await _userManager.AddToRoleAsync(user, "Customer");
+
+                if (!roleresult.Succeeded) 
+                {
+                    return StatusCode(500, $"ERROR on role asign - {roleresult.Errors}");
+                }
+
                 await _signInManager.SignInAsync(applicationUser, false);
 
-                return Ok("Register Success and Logged in");
+                return Redirect(registerModel.ReturnUrl);
             }
             catch (Exception e)
             {

@@ -2,10 +2,10 @@
 
 namespace IdentityServer.Models.Requests
 {
-    public class RegisterRequestModel
+    public class RegisterViewModel
     {
         [Required]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -27,6 +27,8 @@ namespace IdentityServer.Models.Requests
         [Required]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Your password and confirm password do not match")]
-        public string RepeatPassword { get; set; }
+        public string ConfirmPassword { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }
