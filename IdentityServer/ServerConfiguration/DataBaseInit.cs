@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using IdentityServer.Data;
 using IdentityServer.Data.Identity;
-using Server.ServerConfiguration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
