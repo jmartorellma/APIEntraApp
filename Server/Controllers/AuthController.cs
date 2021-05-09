@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IdentityServer.Controllers
 {
-    public class AuthController : ControllerBase
+    public class AuthController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -24,8 +24,25 @@ namespace IdentityServer.Controllers
             _interactionService = interactionService;
         }
 
+        [HttpGet]
+        public IActionResult Login(string returnUrl)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid request model");
+                }
+
+                return View(new LoginViewModel { ReturnUrl = returnUrl});
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost]
-        [Route("login")]
         public async Task<IActionResult> Login(LoginRequestModel loginModel) 
         {
             try
@@ -42,7 +59,7 @@ namespace IdentityServer.Controllers
                     return StatusCode(500, signInResult.IsNotAllowed);
                 }
 
-                return Ok("Logged in");
+                return Redirect(loginModel.ReturnUrl);
             }
             catch (Exception e)
             {
@@ -51,7 +68,6 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        [Route("register")]
         public async Task<IActionResult> Register(RegisterRequestModel registerModel)
         {
             try
@@ -90,7 +106,6 @@ namespace IdentityServer.Controllers
         }
 
         [HttpGet]
-        [Route("logout")]
         public async Task<IActionResult> Logout(string logoutId)
         {
             try
@@ -109,7 +124,7 @@ namespace IdentityServer.Controllers
                     return StatusCode(500, "Error logging out");
                 }
 
-                return Ok(logoutRequest.PostLogoutRedirectUri);
+                return Redirect(logoutRequest.PostLogoutRedirectUri);
             }
             catch (Exception e) 
             {

@@ -22,6 +22,12 @@ namespace Server.ServerConfiguration
                 new ApiResource(configuration["ApiEntraName"].ToString())
             };
 
+        public static IEnumerable<ApiScope> GetScopes(IConfiguration configuration) =>
+           new List<ApiScope>
+           {
+                new ApiScope(configuration["ApiEntraName"].ToString())
+           };
+
         public static IEnumerable<Client> GetClients(IConfiguration configuration) =>
             new List<Client>
             {
@@ -30,7 +36,7 @@ namespace Server.ServerConfiguration
                     ClientId = configuration["ClientId"].ToString(),
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
-                    RequireClientSecret = false,
+                    RequireClientSecret = false,                    
                     RedirectUris = { configuration["AngularClientEntraAppURL"].ToString() },
                     PostLogoutRedirectUris = { configuration["AngularClientEntraAppURL"].ToString() },
                     AllowedCorsOrigins = { configuration["AngularClientEntraAppURL"].ToString() },
@@ -39,6 +45,7 @@ namespace Server.ServerConfiguration
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile
                     },
+                    AccessTokenLifetime = 3600,
                     AllowAccessTokensViaBrowser = true,
                     AllowOfflineAccess = true,
                     RequireConsent = false

@@ -8,6 +8,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityServer.ServerConfiguration;
 using IdentityServer.Data.Identity;
+using System.Threading.Tasks;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Server
 {
@@ -47,14 +50,14 @@ namespace Server
             services.ConfigureApplicationCookie(config => 
             {
                 config.Cookie.Name = "IdentitySever.Cookie";
-                config.LoginPath = "/Auth/login";
-                config.LogoutPath = "/Auth/logout";
+                config.LoginPath = "/Auth/Login";
+                config.LogoutPath = "/Auth/Logout";
             });
 
             var assembly = typeof(Startup).Assembly.GetName().Name;
 
-            //var filePath = Path.Combine(_env.ContentRootPath, _configuration["CertPath"].ToString());
-            //var certificate = new X509Certificate2(filePath, _configuration["CertPassword"].ToString());
+            var filePath = Path.Combine(_env.ContentRootPath, _configuration["CertPath"].ToString());
+            var certificate = new X509Certificate2(filePath, _configuration["CertPassword"].ToString());
 
             services.AddIdentityServer()
                 .AddAspNetIdentity<ApplicationUser>()
@@ -68,15 +71,14 @@ namespace Server
                     options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
                         sql => sql.MigrationsAssembly(assembly));
                 })
-                //.AddSigningCredential(certificate)
-                .AddDeveloperSigningCredential();
+            .AddSigningCredential(certificate);
 
-            services.AddControllers();
+            services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            DataBaseInit.InitializeDatabase(app, _configuration);
+            Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app, _configuration)));
 
             if (env.IsDevelopment())
             {
