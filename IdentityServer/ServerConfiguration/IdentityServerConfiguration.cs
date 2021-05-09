@@ -3,7 +3,7 @@ using IdentityServer4.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
-namespace Server.ServerConfiguration
+namespace IdentityServer.ServerConfiguration
 {
     public static class IdentityServerConfiguration
     {

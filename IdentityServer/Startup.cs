@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Server
+namespace IdentityServer
 {
     public class Startup
     {
