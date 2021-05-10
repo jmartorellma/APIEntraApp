@@ -1,4 +1,10 @@
+using System.IO;
 using IdentityServer.Data;
+using System.Threading.Tasks;
+using IdentityServer.Services;
+using IdentityServer.Services.Interfaces;
+using IdentityServer.Data.Identity;
+using IdentityServer.ServerConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,11 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using IdentityServer.ServerConfiguration;
-using IdentityServer.Data.Identity;
-using System.Threading.Tasks;
-using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace IdentityServer
 {
@@ -36,12 +39,23 @@ namespace IdentityServer
                 config.UseSqlServer(connectionString);
             });
 
+            services.AddSingleton(_configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
+
+            services.AddScoped<IEmailSenderService, EmailSenderService>();
+
+            services.Configure<FormOptions>(config => {
+                config.ValueLengthLimit = int.MaxValue;
+                config.MultipartBodyLengthLimit = int.MaxValue;
+                config.MemoryBufferThreshold = int.MaxValue;
+            });
+
             services.AddIdentity<ApplicationUser, ApplicationRole>(config => 
             {
                 config.Password.RequiredLength = 6;
                 config.Password.RequireDigit = false;
                 config.Password.RequireNonAlphanumeric = false;
-                config.Password.RequireUppercase = true;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireLowercase = false;
                 config.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<AppDbContext>()
