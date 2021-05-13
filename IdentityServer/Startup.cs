@@ -40,6 +40,7 @@ namespace IdentityServer
                 config.UseSqlServer(connectionString);
             });
 
+            services.AddTransient<IUserClaimsPrincipalFactory<ApplicationUser>, CustomUserClaimsPrincipalFactory>();
             services.AddSingleton(_configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>());
 
             services.AddScoped<IEmailSenderService, EmailSenderService>();
@@ -75,26 +76,32 @@ namespace IdentityServer
             var certificate = new X509Certificate2(filePath, _configuration["CertPassword"].ToString());
 
             services.AddIdentityServer()
-                .AddProfileService<ProfileService>()
+                
                 .AddAspNetIdentity<ApplicationUser>()
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                        sql => sql.MigrationsAssembly(assembly));
-                })
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                        sql => sql.MigrationsAssembly(assembly));
-                })
-            .AddSigningCredential(certificate);
+
+                .AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
+                .AddInMemoryApiResources(IdentityServerConfiguration.GetApis(_configuration))
+                .AddInMemoryApiScopes(IdentityServerConfiguration.GetScopes(_configuration))
+                .AddInMemoryClients(IdentityServerConfiguration.GetClients(_configuration))
+                //.AddConfigurationStore(options =>
+                //{
+                //    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                //        sql => sql.MigrationsAssembly(assembly));
+                //})
+                //.AddOperationalStore(options =>
+                //{
+                //    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                //        sql => sql.MigrationsAssembly(assembly));
+                //})
+                .AddProfileService<ProfileService>()
+                .AddSigningCredential(certificate);
 
             services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app, _configuration)));
+            //Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app, _configuration)));
 
             if (env.IsDevelopment())
             {
@@ -102,7 +109,7 @@ namespace IdentityServer
             }
 
             app.UseRouting();
-
+            app.UseStaticFiles();
             app.UseIdentityServer();
 
             app.UseEndpoints(endpoints =>

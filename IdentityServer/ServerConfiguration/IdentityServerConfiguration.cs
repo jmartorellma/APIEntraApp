@@ -2,6 +2,7 @@
 using IdentityServer4.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
+using IdentityModel;
 
 namespace IdentityServer.ServerConfiguration
 {
@@ -13,9 +14,11 @@ namespace IdentityServer.ServerConfiguration
            new IdentityResource[]
            {
                  new IdentityResources.OpenId(),
-                 new IdentityResources.Profile()
+                 new IdentityResources.Profile(),
+                 //new IdentityResources.Email(),
+                 //new IdentityResource("profile", new List<string> { "name", "surname", "email", "phoneNumber", "creationDate", "roles" })
            };
-
+           
         public static IEnumerable<ApiResource> GetApis(IConfiguration configuration) =>
             new List<ApiResource>
             {
@@ -28,7 +31,9 @@ namespace IdentityServer.ServerConfiguration
         public static IEnumerable<ApiScope> GetScopes(IConfiguration configuration) =>
            new List<ApiScope>
            {
-                new ApiScope(configuration["ApiEntraName"].ToString())
+                //new ApiScope(configuration["ApiEntraName"].ToString(), configuration["ApiEntraName"].ToString(),
+                //    new List<string> { "name", "surname", "email", "phoneNumber", "creationDate", "roles" })
+                 new ApiScope(configuration["ApiEntraName"].ToString())
            };
 
         public static IEnumerable<Client> GetClients(IConfiguration configuration) =>
@@ -46,9 +51,10 @@ namespace IdentityServer.ServerConfiguration
                     AllowedScopes = { 
                         configuration["ApiEntraName"].ToString(),
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
                     },
                     AccessTokenLifetime = 3600,
+                    UpdateAccessTokenClaimsOnRefresh = true,
                     AllowAccessTokensViaBrowser = true,
                     AllowOfflineAccess = true,
                     RequireConsent = false
