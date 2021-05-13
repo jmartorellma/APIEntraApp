@@ -1,12 +1,11 @@
 ﻿using MimeKit;
-using MimeKit.Text;
+using System.IO;
+using System.Linq;
 using MailKit.Net.Smtp;
 using System.Threading.Tasks;
 using IdentityServer.Models;
 using IdentityServer.ServerConfiguration;
 using IdentityServer.Services.Interfaces;
-using System.IO;
-using System.Linq;
 
 namespace IdentityServer.Services
 {

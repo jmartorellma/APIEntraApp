@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http.Features;
+using IdentityServer4.Services;
 
 namespace IdentityServer
 {
@@ -74,6 +75,7 @@ namespace IdentityServer
             var certificate = new X509Certificate2(filePath, _configuration["CertPassword"].ToString());
 
             services.AddIdentityServer()
+                .AddProfileService<ProfileService>()
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddConfigurationStore(options =>
                 {
