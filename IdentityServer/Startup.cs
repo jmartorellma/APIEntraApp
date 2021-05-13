@@ -79,29 +79,40 @@ namespace IdentityServer
                 
                 .AddAspNetIdentity<ApplicationUser>()
 
-                .AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
-                .AddInMemoryApiResources(IdentityServerConfiguration.GetApis(_configuration))
-                .AddInMemoryApiScopes(IdentityServerConfiguration.GetScopes(_configuration))
-                .AddInMemoryClients(IdentityServerConfiguration.GetClients(_configuration))
-                //.AddConfigurationStore(options =>
-                //{
-                //    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                //        sql => sql.MigrationsAssembly(assembly));
-                //})
-                //.AddOperationalStore(options =>
-                //{
-                //    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                //        sql => sql.MigrationsAssembly(assembly));
-                //})
+                //.AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
+                //.AddInMemoryApiResources(IdentityServerConfiguration.GetApis(_configuration))
+                //.AddInMemoryApiScopes(IdentityServerConfiguration.GetScopes(_configuration))
+                //.AddInMemoryClients(IdentityServerConfiguration.GetClients(_configuration))
+                .AddConfigurationStore(options =>
+                {
+                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                        sql => sql.MigrationsAssembly(assembly));
+                })
+                .AddOperationalStore(options =>
+                {
+                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                        sql => sql.MigrationsAssembly(assembly));
+                })
                 .AddProfileService<ProfileService>()
                 .AddSigningCredential(certificate);
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowOrigin",
+                   builder =>
+                   {
+                       builder.WithOrigins(_configuration["AngularClientEntraAppURL"].ToString())
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                   });
+            });
 
             services.AddControllersWithViews();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app, _configuration)));
+            Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app, _configuration)));
 
             if (env.IsDevelopment())
             {
@@ -111,6 +122,7 @@ namespace IdentityServer
             app.UseRouting();
             app.UseStaticFiles();
             app.UseIdentityServer();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

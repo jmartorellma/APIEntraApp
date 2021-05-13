@@ -2,14 +2,12 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Extensions;
 using IdentityServer.Data.Identity;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
-using IdentityModel;
-using System.Collections.Generic;
 
 namespace IdentityServer.Services
 {
@@ -34,15 +32,14 @@ namespace IdentityServer.Services
             var claims = principal.Claims.ToList();
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();            
 
-            // Add custom claims in token here based on user properties or any other source
             claims.Add(new Claim("userName", user.UserName ?? string.Empty));
             claims.Add(new Claim("surname", user.Surname ?? string.Empty));
-            claims.Add(new Claim(JwtClaimTypes.Email, user.Email ?? string.Empty));
+            claims.Add(new Claim("email", user.Email ?? string.Empty));
             claims.Add(new Claim("phoneNumber", user.PhoneNumber ?? string.Empty));
             claims.Add(new Claim("creationDate", user.CreationDate.ToString("dd/MM/yyyy HH:mm:ss") ?? string.Empty));
             roles.ForEach(role => 
             {
-                claims.Add(new Claim(JwtClaimTypes.Role, role ?? string.Empty));
+                claims.Add(new Claim("role", role ?? string.Empty));
             });                     
 
             context.IssuedClaims = claims;

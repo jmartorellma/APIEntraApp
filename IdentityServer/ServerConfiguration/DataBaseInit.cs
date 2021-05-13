@@ -98,14 +98,14 @@ namespace IdentityServer.ServerConfiguration
                     contextIdentity.SaveChanges();
                 }
 
-                if (contextIdentity.Users.FirstOrDefault(u => u.Email.Equals("jmartorell@uoc.edu")) == null) 
+                if (contextIdentity.Users.FirstOrDefault(u => u.Email.Equals("jmartorellma@uoc.edu")) == null) 
                 {
                     var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
                     ApplicationUser applicationUser = new ApplicationUser
                     {
                         UserName = "jmartorellma",
-                        Email = "jmartorell@uoc.edu",
+                        Email = "jmartorellma@uoc.edu",
                         PhoneNumber = "666999666",
                         Name = "Jordi",
                         Surname = "Martorell Masip",

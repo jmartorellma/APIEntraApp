@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using IdentityServer4.Services;
 using IdentityServer.Data.Identity;
 using IdentityServer.Models.Requests;
+using IdentityServer.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using IdentityServer.Models;
-using IdentityServer.Models.Responses;
 using IdentityServer.Services.Interfaces;
 
 namespace IdentityServer.Controllers
@@ -176,7 +177,8 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ResetPasswordRequest(ResetPasswordRequestModel emailModel)
+        [EnableCors("AllowOrigin")]
+        public async Task<IActionResult> ResetPasswordRequest([FromBody] ResetPasswordRequestModel emailModel)
         {
             try
             {
@@ -192,7 +194,7 @@ namespace IdentityServer.Controllers
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callback = Url.Action(nameof(ResetPassword), "Auth", new { token, email = user.Email }, HttpMethod.Get.Method); // Request.Scheme
+                var callback = Url.Action(nameof(ResetPassword), "Auth", new { token, email = user.Email }, Request.Scheme);
 
                 var message = new EmailMessage(new string[] { user.Email }, "Entra Identity Reset Password Functionallity", callback, null);
 
@@ -252,15 +254,15 @@ namespace IdentityServer.Controllers
                 return View();
             }
 
-            return View("ResetPasswordConfirmation", new ResetPasswordViewModel 
+            return RedirectToAction("ResetPasswordConfirmation", new ResetPasswordViewModel 
             { 
                 Result = "Se ha establecido correctamente el nuevo Password. Ya puedes volver a acceder a la aplicación." 
             });
         }
 
-        public IActionResult ResetPasswordConfirmation()
+        public IActionResult ResetPasswordConfirmation(ResetPasswordViewModel model)
         {
-            return View();
+            return View(model);
         }
 
     }
