@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using IdentityServer4.Services;
 using IdentityServer.Data.Identity;
@@ -46,8 +45,8 @@ namespace IdentityServer.Controllers
                     return BadRequest("Invalid request model");
                 }
 
-                return View(new LoginViewModel 
-                { 
+                return View(new LoginViewModel
+                {
                     ReturnUrl = returnUrl
                 });
             }
@@ -58,7 +57,7 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginModel) 
+        public async Task<IActionResult> Login(LoginViewModel loginModel)
         {
             try
             {
@@ -70,7 +69,7 @@ namespace IdentityServer.Controllers
                 var signInResult = await _signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, false, false);
 
                 if (!signInResult.Succeeded)
-                {                    
+                {
                     return StatusCode(500, signInResult.IsNotAllowed);
                 }
 
@@ -79,7 +78,7 @@ namespace IdentityServer.Controllers
             catch (Exception e)
             {
                 return StatusCode(500, e.Message);
-            }            
+            }
         }
 
         [HttpGet]

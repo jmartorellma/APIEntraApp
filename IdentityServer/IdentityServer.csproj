@@ -18,6 +18,14 @@
     <PackageReference Include="NETCore.MailKit" Version="2.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\img\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\styles.css" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

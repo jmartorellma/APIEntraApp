@@ -1,0 +1,79 @@
+﻿@import url('https://fonts.googleapis.com/css?family=Numans');
+
+html, body {
+    height: 100%;
+    font-family: 'Numans', sans-serif;
+}
+
+.header {
+    background-color: rgba(0,0,0,0.5) !important;
+    color: white;
+    padding-top: 1.2rem;
+    padding-bottom: 1.2rem;
+}
+
+.container {
+    height: 100%;
+    align-content: center;
+}
+
+.login-card {
+    height: 400px;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 400px;
+    background-color: rgba(0,0,0,0.5) !important;
+}
+
+form {
+    height: 100%;
+}
+
+.icon-label {
+    display: flex;
+}
+
+    .icon-label span {
+        width: 38px;
+        background-color: #27cc0f;
+        color: black;
+        border: 0 !important;
+    }
+
+input:focus {
+    outline: 0 0 0 0 !important;
+    box-shadow: 0 0 0 0 !important;
+}
+
+.login_btn {
+    color: white;
+    font-weight: bold;
+    background-color: #27cc0f;
+    border: 1px solid #27cc0f;
+}
+
+    .login_btn:hover {
+        color: #27cc0f;
+        background-color: white;
+        -webkit-box-shadow: 0px 10px 13px -7px #000000, 0px 0px 24px 0px rgba(8,165,0,0.58);
+        box-shadow: 0px 10px 13px -7px #000000, 0px 0px 24px 0px rgba(8,165,0,0.58);
+    }
+
+.links {
+    color: white;
+    font-weight :bold;
+    text-align: center;
+}
+
+.links-text {
+    color: black;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+    a:hover {
+        color: #27cc0f;
+    }

@@ -1,20 +1,68 @@
 ﻿@model LoginViewModel
 
-<form asp-contrrolloller="Auth" asp-action="Login" method="post">
-    <input type="hidden" asp-for="ReturnUrl" />
-    <div>
-        <label>UserName</label>
-        <input asp-for="Username" />
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" rel="stylesheet"
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" type="text/css" href="~/css/styles.css">
+    <title>Entra App Login</title>
+</head>
+<body>
+    <nav class="navbar fixed-top d-flex justify-content-center header">
+        <span class="mb-0 h1">Login</span>
+    </nav>
+    <div class="container">
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <div class="card login-card">
+                <div class="card-body">
+                    <form asp-contrrolloller="Auth" asp-action="Login" method="post" class="container">
+                        <div class="container d-flex flex-column justify-content-around">
+                            <div class="row">
+                                <input type="hidden" asp-for="ReturnUrl" />
+                                <label class="sr-only" for="formInputName">Name</label>
+                                <div class="input-group mb-3">
+                                    <div class="icon-label">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" asp-for="Username" id="formInputName" class="form-control" placeholder="usuario">
+                                </div>
+                                <label class="sr-only" for="formInputPass">Name</label>
+                                <div class="input-group mb-3">
+                                    <div class="icon-label">
+                                        <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                    </div>
+                                    <input type="password" asp-for="Password" id="formInputPass" class="form-control" placeholder="password">
+                                </div>
+                            </div>
+                            <div class="row d-flex">
+                                <div class="input-group">
+                                    <input type="submit" value="Login" class="btn flex-fill login_btn">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-around links mb-2">
+                        <span class="links-text">No tienes cuenta?</span>
+                        <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Regístrate</a>
+                    </div>
+                    <div class="d-flex justify-content-center links mb-2">
+                        <a href="#">Restablecer Contraseña</a>
+                        @*<a asp-controller="Auth" asp-action="Register">Restablecer Contraseña</a>*@
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label>Password</label>
-        <input asp-for="Password" />
-    </div>
-    <div>
-        <button type="submit">Sign In</button>
-    </div>
-</form>
 
-<div>
-    <a asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Register</a>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+</body>
+</html>
