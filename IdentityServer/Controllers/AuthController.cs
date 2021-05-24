@@ -36,65 +36,35 @@ namespace IdentityServer.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl)
+        public async Task<IActionResult> Login(string returnUrl)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid request model");
+                    return StatusCode(500, "Petición de login inválida");
                 }
 
-                return View(new LoginViewModel
-                {
-                    ReturnUrl = returnUrl
-                });
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
-        }
+                var request = await _interactionService.GetAuthorizationContextAsync(returnUrl);
 
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginModel)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
+                string username = request.Parameters["username"];
+                string password = request.Parameters["password"];
+
+                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
-                    return View(loginModel);
+                    return StatusCode(500, "Usuario o password no encotrados en la petición");
                 }
 
-                var signInResult = await _signInManager.PasswordSignInAsync(loginModel.Username, loginModel.Password, false, false);
+                var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
                 if (!signInResult.Succeeded)
                 {
                     return StatusCode(500, signInResult.IsNotAllowed);
                 }
 
-                return Redirect(loginModel.ReturnUrl);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
-        }
+                string cleanUrl = returnUrl.Replace($"&username={username}&password={password}", string.Empty);
 
-        [HttpGet]
-        public IActionResult Register(string returnUrl)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Invalid request model");
-                }
-
-                return View(new RegisterViewModel 
-                { 
-                    ReturnUrl = returnUrl 
-                });
+                return Redirect(cleanUrl);
             }
             catch (Exception e)
             {
@@ -103,13 +73,20 @@ namespace IdentityServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel registerModel)
+        [EnableCors("AllowOrigin")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestModel registerModel)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return View(registerModel);
+                    return StatusCode(500, "Petición de registro inválida");
+                }
+
+                var userFound = await _userManager.FindByEmailAsync(registerModel.Email);
+                if (userFound != null) 
+                {
+                    return StatusCode(500, $"Ya existe un usuario en el sisitema con el Email {registerModel.Email}");
                 }
 
                 ApplicationUser applicationUser = new ApplicationUser
@@ -127,7 +104,7 @@ namespace IdentityServer.Controllers
 
                 if (!createResult.Succeeded)
                 {
-                    return StatusCode(500, createResult.Errors);
+                    return StatusCode(500, $"ERROR dando de alta el usuario - {createResult.Errors}");
                 }
 
                 var user = await _userManager.FindByEmailAsync(applicationUser.Email);
@@ -135,12 +112,16 @@ namespace IdentityServer.Controllers
 
                 if (!roleresult.Succeeded) 
                 {
-                    return StatusCode(500, $"ERROR on role asign - {roleresult.Errors}");
+                    await _userManager.DeleteAsync(user);
+                    return StatusCode(500, $"ERROR asignando el rol de usuario - {roleresult.Errors}");
                 }
 
                 await _signInManager.SignInAsync(applicationUser, false);
 
-                return Redirect(registerModel.ReturnUrl);
+                return Ok(new RegisterResponseModel 
+                { 
+                    Message = $"Usuario creado correctamente" 
+                });
             }
             catch (Exception e)
             {
