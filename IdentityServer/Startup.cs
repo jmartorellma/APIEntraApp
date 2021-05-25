@@ -75,8 +75,7 @@ namespace IdentityServer
             var filePath = Path.Combine(_env.ContentRootPath, _configuration["CertPath"].ToString());
             var certificate = new X509Certificate2(filePath, _configuration["CertPassword"].ToString());
 
-            services.AddIdentityServer()
-                
+            services.AddIdentityServer()                
                 .AddAspNetIdentity<ApplicationUser>()
 
                 //.AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())

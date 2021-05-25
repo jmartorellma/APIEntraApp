@@ -52,14 +52,14 @@ namespace IdentityServer.Controllers
 
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
-                    return StatusCode(500, "Usuario o password no encotrados en la petición");
+                    return Redirect(_configuration["AngularClientEntraAppURL"] + "/accounts/login?error=Usuario o Password no encotrado en la llamada");
                 }
 
                 var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
                 if (!signInResult.Succeeded)
                 {
-                    return StatusCode(500, signInResult.IsNotAllowed);
+                    return Redirect(_configuration["AngularClientEntraAppURL"] + "/accounts/login?error=Usuario o Password incorrecto");
                 }
 
                 string cleanUrl = returnUrl.Replace($"&username={username}&password={password}", string.Empty);
@@ -68,7 +68,7 @@ namespace IdentityServer.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
+                return Redirect(_configuration["AngularClientEntraAppURL"] + "/accounts/login?error=" + e.Message);
             }
         }
 
@@ -87,6 +87,12 @@ namespace IdentityServer.Controllers
                 if (userFound != null) 
                 {
                     return StatusCode(500, $"Ya existe un usuario en el sisitema con el Email {registerModel.Email}");
+                }
+
+                userFound = await _userManager.FindByNameAsync(registerModel.Username);
+                if (userFound != null)
+                {
+                    return StatusCode(500, $"Ya existe un usuario en el sisitema con el Usuario {registerModel.Username}");
                 }
 
                 ApplicationUser applicationUser = new ApplicationUser
