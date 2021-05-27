@@ -170,23 +170,23 @@ namespace IdentityServer.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid request email model");
+                    return BadRequest("Petición de restablecer Passwors inválida");
                 }
 
                 var user = await _userManager.FindByEmailAsync(emailModel.Email);
                 if (user == null)
                 {
-                    return BadRequest($"No user with email {emailModel.Email} exists");
+                    return BadRequest($"No existe ningún usuario con el email {emailModel.Email}");
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callback = Url.Action(nameof(ResetPassword), "Auth", new { token, email = user.Email }, Request.Scheme);
 
-                var message = new EmailMessage(new string[] { user.Email }, "Entra Identity Reset Password Functionallity", callback, null);
+                var message = new EmailMessage(new string[] { user.Email }, "Funcionalidad reestablecer Password de Entra Identity", callback, null);
 
                 await _emailSenderService.SendEmailAsync(message);
 
-                return Ok(new ResetPasswordResponseModel { Response = $"Email sent to {emailModel.Email} to reset the Password"});
+                return Ok(new ResetPasswordResponseModel { Message = $"Se ha enviado un email a {emailModel.Email} para restablecer el Password"});
             }
             catch (Exception e)
             {
