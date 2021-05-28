@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using IdentityServer.Models;
 using IdentityServer.Services.Interfaces;
+using System.IO;
 
 namespace IdentityServer.Controllers
 {
@@ -170,23 +171,36 @@ namespace IdentityServer.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Petición de restablecer Passwors inválida");
+                    return StatusCode(500, "Petición de restablecer contarseña inválida");
                 }
 
                 var user = await _userManager.FindByEmailAsync(emailModel.Email);
                 if (user == null)
                 {
-                    return BadRequest($"No existe ningún usuario con el email {emailModel.Email}");
+                    return StatusCode(500, $"No existe ningún usuario con el email {emailModel.Email}");
+                }
+
+                Stream stream = GetType().Assembly.GetManifestResourceStream(_configuration["PathMailResetTemplate"]);
+
+                if (stream == null)
+                {
+                    return StatusCode(500, "Error catgando la plantilla del correo");
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callback = Url.Action(nameof(ResetPassword), "Auth", new { token, email = user.Email }, Request.Scheme);
 
-                var message = new EmailMessage(new string[] { user.Email }, "Funcionalidad reestablecer Password de Entra Identity", callback, null);
+                StreamReader reader = new StreamReader(stream);
+                string mailResetTemplate = reader.ReadToEnd();
+                mailResetTemplate = mailResetTemplate.Replace(_configuration["TemplateNameTextToReplace"], user.Name);
+                mailResetTemplate = mailResetTemplate.Replace(_configuration["TemplateSurameTextToReplace"], user.Surname);
+                mailResetTemplate = mailResetTemplate.Replace(_configuration["TemplateLinkTextToReplace"], callback);                
+
+                var message = new EmailMessage(new string[] { user.Email }, "Restablecer contarseña de Entra App Identity", mailResetTemplate, null);
 
                 await _emailSenderService.SendEmailAsync(message);
 
-                return Ok(new ResetPasswordResponseModel { Message = $"Se ha enviado un email a {emailModel.Email} para restablecer el Password"});
+                return Ok(new ResetPasswordResponseModel { Message = $"Se ha enviado un email a {emailModel.Email} para restablecer la contraseña"});
             }
             catch (Exception e)
             {

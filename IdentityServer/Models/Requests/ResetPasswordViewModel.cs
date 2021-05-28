@@ -6,7 +6,7 @@ namespace IdentityServer.Models.Requests
     {
         [Required]
         [DataType(DataType.Password)]
-        [StringLength(100, ErrorMessage = "El Password debe tener almenos 6 carácteres")]
+        [StringLength(30, ErrorMessage = "El número de caracteres de {0} debe ser al menos {2} y 30 de máximo.", MinimumLength = 6)]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]

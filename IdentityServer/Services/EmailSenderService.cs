@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IdentityServer.Models;
 using IdentityServer.ServerConfiguration;
 using IdentityServer.Services.Interfaces;
+using System;
 
 namespace IdentityServer.Services
 {
@@ -64,9 +65,9 @@ namespace IdentityServer.Services
 
                 await client.SendAsync(mailMessage);
             }
-            catch
+            catch (Exception e)
             {
-                throw;
+                throw new Exception($"Enviando Mail: {e.Message}");
             }
             finally
             {
