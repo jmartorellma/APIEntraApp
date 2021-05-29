@@ -9,6 +9,7 @@ namespace IdentityServer.Models.Requests
         [StringLength(30, ErrorMessage = "El número de caracteres de {0} debe ser al menos {2} y 30 de máximo.", MinimumLength = 6)]
         public string Password { get; set; }
 
+        [Required]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Los passwords no coinciden")]
         public string ConfirmPassword { get; set; }

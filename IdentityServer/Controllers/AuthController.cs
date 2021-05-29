@@ -1,16 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using IdentityServer4.Services;
-using IdentityServer.Data.Identity;
+using IdentityServer.Models;
 using IdentityServer.Models.Requests;
 using IdentityServer.Models.Responses;
+using IdentityServer.Data.Identity;
+using IdentityServer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using IdentityServer.Models;
-using IdentityServer.Services.Interfaces;
-using System.IO;
 
 namespace IdentityServer.Controllers
 {
@@ -250,13 +250,14 @@ namespace IdentityServer.Controllers
                 foreach (var error in resetPassResult.Errors)
                 {
                     ModelState.TryAddModelError(error.Code, error.Description);
+                    resetPasswordModel.Result += error.Description;
                 }
-                return View();
+                return View(resetPasswordModel);
             }
 
             return RedirectToAction("ResetPasswordConfirmation", new ResetPasswordViewModel 
             { 
-                Result = "Se ha establecido correctamente el nuevo Password. Ya puedes volver a acceder a la aplicación." 
+                Result = "Se ha establecido correctamente la nueva contraseña. Ya puedes volver a acceder a la aplicación." 
             });
         }
 
