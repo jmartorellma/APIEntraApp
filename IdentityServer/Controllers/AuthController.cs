@@ -43,7 +43,7 @@ namespace IdentityServer.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return StatusCode(500, "Petición de login inválida");
+                    throw new Exception("Petición de login inválida");
                 }
 
                 var request = await _interactionService.GetAuthorizationContextAsync(returnUrl);
@@ -53,14 +53,14 @@ namespace IdentityServer.Controllers
 
                 if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
-                    return Redirect(_configuration["AngularClientEntraAppURL"] + "/accounts/login?error=Usuario o Password no encotrado en la llamada");
+                    throw new Exception("Usuario o Contraseña no encotrado en la llamada");
                 }
 
                 var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
                 if (!signInResult.Succeeded)
                 {
-                    return Redirect(_configuration["AngularClientEntraAppURL"] + "/accounts/login?error=Usuario o Password incorrecto");
+                    throw new Exception("Usuario o Password incorrecto");
                 }
 
                 string cleanUrl = returnUrl.Replace($"&username={username}&password={password}", string.Empty);
@@ -143,7 +143,7 @@ namespace IdentityServer.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid request model");
+                    throw new Exception("Petición de cerrar sesión inválida");
                 }
 
                 await _signInManager.SignOutAsync();
@@ -152,14 +152,14 @@ namespace IdentityServer.Controllers
 
                 if (string.IsNullOrWhiteSpace(logoutRequest.PostLogoutRedirectUri))
                 {
-                    return StatusCode(500, "Error logging out");
+                    throw new Exception("Error cerrando la sesión");
                 }
 
                 return Redirect(logoutRequest.PostLogoutRedirectUri);
             }
             catch (Exception e) 
             {
-                return StatusCode(500, e.Message);
+                return Redirect(_configuration["AngularClientEntraAppURL"] + "/accounts/logout?error=" + e.Message);
             }
         }
 

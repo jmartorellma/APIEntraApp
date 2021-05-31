@@ -41,7 +41,7 @@ namespace IdentityServer.ServerConfiguration
                     RequirePkce = true,
                     RequireClientSecret = false,                    
                     RedirectUris = { configuration["AngularClientEntraAppURL"].ToString() },
-                    PostLogoutRedirectUris = { configuration["AngularClientEntraAppURL"].ToString() },
+                    PostLogoutRedirectUris = { configuration["AngularClientEntraAppURL"].ToString() + "/accounts/logout" },
                     AllowedCorsOrigins = { configuration["AngularClientEntraAppURL"].ToString() },
                     AllowedScopes = { 
                         configuration["ApiEntraName"].ToString(),
