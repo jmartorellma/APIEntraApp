@@ -1,8 +1,14 @@
+using APIEntraApp.Data;
+using System.Threading.Tasks;
+using APIEntraApp.Data.InitData;
+using APIEntraApp.Data.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace APIEntraApp
 {
@@ -18,6 +24,25 @@ namespace APIEntraApp
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<ApiDbContext>(config =>
+            {
+                config.UseSqlServer(connectionString);
+            });
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
+            {
+                config.Password.RequiredLength = 6;
+                config.Password.RequireDigit = false;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireLowercase = false;
+                config.User.RequireUniqueEmail = true;
+            })
+                .AddEntityFrameworkStores<ApiDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", config =>
                 {
@@ -41,6 +66,8 @@ namespace APIEntraApp
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app)));
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
