@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using APIEntraApp.Services.Interfaces;
+using APIEntraApp.Services;
+using APIEntraApp.Data.Identity;
+using Microsoft.AspNetCore.Identity;
+using System;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace APIEntraApp
 {
@@ -28,6 +34,20 @@ namespace APIEntraApp
             {
                 config.UseSqlServer(connectionString);
             });
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
+            {
+                config.Password.RequiredLength = 6;
+                config.Password.RequireDigit = false;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireLowercase = false;
+                config.User.RequireUniqueEmail = true;
+            })
+                .AddEntityFrameworkStores<ApiDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddSingleton<IUserService, UserService>();
 
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", config =>
@@ -67,5 +87,7 @@ namespace APIEntraApp
                 endpoints.MapControllers();
             });
         }
+
+        
     }
 }

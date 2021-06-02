@@ -1,10 +1,11 @@
 ﻿using APIEntraApp.Data.Models;
 using APIEntraApp.Data.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace APIEntraApp.Data
 {
-    public class ApiDbContext : DbContext
+    public class ApiDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         public ApiDbContext(DbContextOptions<ApiDbContext> options)
             : base(options)
@@ -17,7 +18,19 @@ namespace APIEntraApp.Data
 
             // AspNetUsers se crea en el IdentityServer
             builder.Entity<ApplicationUser>()
-                .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
+                .ToTable("AspNetRoleClaims", t => t.ExcludeFromMigrations());
+            builder.Entity<ApplicationUser>()
+                .ToTable("AspNetRoles", t => t.ExcludeFromMigrations());
+            builder.Entity<ApplicationUser>()
+                .ToTable("AspNetUserClaims", t => t.ExcludeFromMigrations());
+            builder.Entity<ApplicationUser>()
+                .ToTable("AspNetUserLogins", t => t.ExcludeFromMigrations());
+            builder.Entity<ApplicationUser>()
+                .ToTable("AspNetUserRoles", t => t.ExcludeFromMigrations());
+            builder.Entity<ApplicationUser>()
+               .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
+            builder.Entity<ApplicationUser>()
+                .ToTable("AspNetUserTokens", t => t.ExcludeFromMigrations());
 
             builder.Entity<Message>()
                .HasOne(u => u.Sender)

@@ -20,7 +20,7 @@ namespace IdentityServer.ServerConfiguration
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                await serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
+                //await serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
 
                 #region IdentityServer
 
@@ -67,7 +67,7 @@ namespace IdentityServer.ServerConfiguration
                 #region SuperUser
 
                 var contextIdentity = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                await contextIdentity.Database.MigrateAsync();
+                //await contextIdentity.Database.MigrateAsync();
 
                 if (!contextIdentity.Roles.Any())
                 {
