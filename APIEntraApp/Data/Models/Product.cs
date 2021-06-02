@@ -36,6 +36,7 @@ namespace APIEntraApp.Data.Models
         public List<User_Product_Rating> User_Product_Ratings { get; set; }
         public List<Product_Category> Product_Categories { get; set; }
         public List<Product_Provider> Product_Providers { get; set; }
+        public List<User_Product_Cart> Users_Product_Cart { get; set; }
     }
     
 }

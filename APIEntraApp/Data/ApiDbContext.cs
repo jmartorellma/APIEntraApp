@@ -1,7 +1,6 @@
-﻿using APIEntraApp.Data.Identity;
+﻿using APIEntraApp.Data.Models;
+using APIEntraApp.Data.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using APIEntraApp.Data.Models;
 
 namespace APIEntraApp.Data
 {
@@ -19,6 +18,18 @@ namespace APIEntraApp.Data
             // AspNetUsers se crea en el IdentityServer
             builder.Entity<ApplicationUser>()
                 .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
+
+            builder.Entity<Message>()
+               .HasOne(u => u.User)
+               .WithMany(u => u.MessagesSent)
+               .HasForeignKey(ui => ui.FromId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+                .HasOne(s => s.Reciever)
+                .WithMany(u => u.MessagesRecived)
+                .HasForeignKey(si => si.ToId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<User_Shop_Favorite>()
                 .HasKey(k => new { k.UserId, k.ShopId });
@@ -127,8 +138,42 @@ namespace APIEntraApp.Data
                 .WithMany(us => us.Products_Provider)
                 .HasForeignKey(si => si.ProviderId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<User_Product_Cart>()
+               .HasOne(u => u.User)
+               .WithMany(us => us.User_Products_Cart)
+               .HasForeignKey(ui => ui.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<User_Product_Cart>()
+                .HasOne(s => s.Product)
+                .WithMany(us => us.Users_Product_Cart)
+                .HasForeignKey(si => si.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Purchase>()
+               .Property(p => p.Amount).HasPrecision(18, 2);
+
+            builder.Entity<Purchase_Cart>()
+              .HasKey(k => new { k.PurchaseId, k.UserProductCartId });
+
+            builder.Entity<Purchase_Cart>()
+                .HasOne(u => u.Purchase)
+                .WithMany(us => us.Purchase_Carts)
+                .HasForeignKey(ui => ui.PurchaseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Purchase_Cart>()
+                .HasOne(s => s.UserProductCart)
+                .WithMany(us => us.Purchases_Cart)
+                .HasForeignKey(si => si.UserProductCartId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Delivery>()
+               .Property(p => p.DeliveryTaxes).HasPrecision(18, 2);
         }
 
+        public DbSet<Message> Messages { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<User_Shop_Favorite> Users_Shops_Favorites { get; set; }
         public DbSet<User_Shop_Rating> Users_Shops_Ratings { get; set; }
@@ -141,6 +186,13 @@ namespace APIEntraApp.Data
         public DbSet<Product_Category> Products_Categories { get; set; }
         public DbSet<Provider> Providers { get; set; }
         public DbSet<Product_Provider> Products_Providers { get; set; }
+        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<PurchaseType> PurchaseTypes { get; set; }
+        public DbSet<PaymentStatus> PaymentStatus { get; set; }        
+        public DbSet<User_Product_Cart> Users_Products_Cart { get; set; }
+        public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<Purchase_Cart> Purchases_Carts { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
     }
 
 }
