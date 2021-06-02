@@ -365,6 +365,9 @@ namespace APIEntraApp.Data.Migrations
                     b.Property<int>("PaymentMethodId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PaymentStatusId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PurchaseTypeId")
                         .HasColumnType("int");
 
@@ -374,6 +377,8 @@ namespace APIEntraApp.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("PaymentStatusId");
 
                     b.HasIndex("PurchaseTypeId");
 
@@ -643,7 +648,7 @@ namespace APIEntraApp.Data.Migrations
 
             modelBuilder.Entity("APIEntraApp.Data.Models.Message", b =>
                 {
-                    b.HasOne("APIEntraApp.Data.Identity.ApplicationUser", "User")
+                    b.HasOne("APIEntraApp.Data.Identity.ApplicationUser", "Sender")
                         .WithMany("MessagesSent")
                         .HasForeignKey("FromId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -657,7 +662,7 @@ namespace APIEntraApp.Data.Migrations
 
                     b.Navigation("Reciever");
 
-                    b.Navigation("User");
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("APIEntraApp.Data.Models.Product", b =>
@@ -725,6 +730,12 @@ namespace APIEntraApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("APIEntraApp.Data.Models.PaymentStatus", "PaymentStatus")
+                        .WithMany()
+                        .HasForeignKey("PaymentStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("APIEntraApp.Data.Models.PurchaseType", "PurchaseType")
                         .WithMany()
                         .HasForeignKey("PurchaseTypeId")
@@ -732,6 +743,8 @@ namespace APIEntraApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("PaymentMethod");
+
+                    b.Navigation("PaymentStatus");
 
                     b.Navigation("PurchaseType");
                 });
