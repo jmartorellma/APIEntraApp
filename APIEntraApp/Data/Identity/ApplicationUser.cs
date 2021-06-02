@@ -14,5 +14,7 @@ namespace APIEntraApp.Data.Identity
 
         //Navigation properties
         public List<User_Shop_Favorites> User_Shop_Favorites { get; set; }
+        public List<User_Shop_Ratings> User_Shop_Ratings { get; set; }
+        public List<User_Shop_Locked> User_Shop_Locked { get; set; }
     }
 }

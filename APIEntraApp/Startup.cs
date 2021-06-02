@@ -31,18 +31,6 @@ namespace APIEntraApp
                 config.UseSqlServer(connectionString);
             });
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
-            {
-                config.Password.RequiredLength = 6;
-                config.Password.RequireDigit = false;
-                config.Password.RequireNonAlphanumeric = false;
-                config.Password.RequireUppercase = false;
-                config.Password.RequireLowercase = false;
-                config.User.RequireUniqueEmail = true;
-            })
-                .AddEntityFrameworkStores<ApiDbContext>()
-                .AddDefaultTokenProviders();
-
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", config =>
                 {
@@ -66,7 +54,7 @@ namespace APIEntraApp
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app)));
+            // Task.WaitAll(Task.Run(async () => await DataBaseInit.InitializeDatabase(app)));
 
             if (env.IsDevelopment())
             {

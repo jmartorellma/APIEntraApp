@@ -1,16 +1,16 @@
-﻿using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Mappers;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using IdentityServer.Data;
 using IdentityServer.Data.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.EntityFramework.DbContexts;
 
 namespace IdentityServer.ServerConfiguration
 {
@@ -20,61 +20,61 @@ namespace IdentityServer.ServerConfiguration
         {
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
-                serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+                await serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.MigrateAsync();
 
                 #region IdentityServer
 
-                var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-                context.Database.Migrate();
-                if (!context.Clients.Any())
-                {
-                    foreach (var client in IdentityServerConfiguration.GetClients(configuration))
-                    {
-                        context.Clients.Add(client.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
+                //var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+                //await context.Database.MigrateAsync();
+                //if (!context.Clients.Any())
+                //{
+                //    foreach (var client in IdentityServerConfiguration.GetClients(configuration))
+                //    {
+                //        await context.Clients.AddAsync(client.ToEntity());
+                //    }
+                //    await context.SaveChangesAsync();
+                //}
 
-                if (!context.IdentityResources.Any())
-                {
-                    foreach (var resource in IdentityServerConfiguration.GetIdentityResources())
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
+                //if (!context.IdentityResources.Any())
+                //{
+                //    foreach (var resource in IdentityServerConfiguration.GetIdentityResources())
+                //    {
+                //        await context.IdentityResources.AddAsync(resource.ToEntity());
+                //    }
+                //    await context.SaveChangesAsync();
+                //}
 
-                if (!context.ApiResources.Any())
-                {
-                    foreach (var resource in IdentityServerConfiguration.GetApis(configuration))
-                    {
-                        context.ApiResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
+                //if (!context.ApiResources.Any())
+                //{
+                //    foreach (var resource in IdentityServerConfiguration.GetApis(configuration))
+                //    {
+                //        await context.ApiResources.AddAsync(resource.ToEntity());
+                //    }
+                //    await context.SaveChangesAsync();
+                //}
 
-                if (!context.ApiScopes.Any())
-                {
-                    foreach (var resource in IdentityServerConfiguration.GetScopes(configuration))
-                    {
-                        context.ApiScopes.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
-                }
+                //if (!context.ApiScopes.Any())
+                //{
+                //    foreach (var resource in IdentityServerConfiguration.GetScopes(configuration))
+                //    {
+                //        await context.ApiScopes.AddAsync(resource.ToEntity());
+                //    }
+                //    await context.SaveChangesAsync();
+                //}
 
                 #endregion IdentityServer
 
                 #region SuperUser
 
                 var contextIdentity = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-                contextIdentity.Database.Migrate();                
+                await contextIdentity.Database.MigrateAsync();
 
                 if (!contextIdentity.Roles.Any())
                 {
-                    contextIdentity.Roles.AddRange(new List<ApplicationRole> 
-                    { 
-                        new ApplicationRole 
-                        { 
+                    await contextIdentity.Roles.AddRangeAsync(new List<ApplicationRole>
+                    {
+                        new ApplicationRole
+                        {
                             Name = "SuperUser",
                             NormalizedName = "SUPERUSER"
                         },
@@ -95,10 +95,10 @@ namespace IdentityServer.ServerConfiguration
                         }
                     });
 
-                    contextIdentity.SaveChanges();
+                    await contextIdentity.SaveChangesAsync();
                 }
 
-                if (contextIdentity.Users.FirstOrDefault(u => u.Email.Equals("jmartorellma@uoc.edu")) == null) 
+                if (contextIdentity.Users.FirstOrDefault(u => u.Email.Equals("jmartorellma@uoc.edu")) == null)
                 {
                     var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -119,7 +119,7 @@ namespace IdentityServer.ServerConfiguration
                         var user = await userManager.FindByEmailAsync(applicationUser.Email);
                         var roleresult = await userManager.AddToRoleAsync(user, "SuperUser");
 
-                        contextIdentity.SaveChanges();
+                        await contextIdentity.SaveChangesAsync();
                     }
                 }
 
