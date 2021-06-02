@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace APIEntraApp.Data.Models
@@ -23,11 +24,16 @@ namespace APIEntraApp.Data.Models
         public decimal  Pvp          { get; set; }
         [Required]
         public string   Picture      { get; set; }
+        [Required]
         public DateTime CreationDate { get; set; }
 
         //Navigation Properties
         public int ShopId { get; set; }
         public Shop Shop { get; set; }
+        public int StockId { get; set; }
+        public Stock Stock { get; set; }
+        public List<User_Product_Favorites> User_Product_Favorites { get; set; }
+        public List<User_Product_Ratings> User_Product_Ratings { get; set; }
     }
     
 }

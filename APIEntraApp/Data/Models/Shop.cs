@@ -25,6 +25,7 @@ namespace APIEntraApp.Data.Models
         public string   City         { get; set; }
         public string   Picture      { get; set; }
         public string   Web          { get; set; }
+        [Required]
         public DateTime CreationDate { get; set; }
 
         //Navigation Properties
@@ -33,7 +34,8 @@ namespace APIEntraApp.Data.Models
         public List<User_Shop_Favorites> User_Shop_Favorites { get; set; }
         public List<User_Shop_Ratings> User_Shop_Ratings { get; set; }
         public List<User_Shop_Locked> User_Shop_Locked { get; set; }
-        public List<Product> Products { get; set; }
+        //Navigation Properties
+        public Product Product { get; set; }
     }
     
 }

@@ -1,11 +1,9 @@
 using APIEntraApp.Data;
 using System.Threading.Tasks;
 using APIEntraApp.Data.InitData;
-using APIEntraApp.Data.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

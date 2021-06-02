@@ -70,12 +70,43 @@ namespace APIEntraApp.Data
 
             builder.Entity<Product>()
                .Property(p => p.Pvp).HasPrecision(18, 2);
+
+            builder.Entity<User_Product_Favorites>()
+               .HasKey(k => new { k.UserId, k.ProductId });
+
+            builder.Entity<User_Product_Favorites>()
+                .HasOne(u => u.User)
+                .WithMany(us => us.User_Product_Favorites)
+                .HasForeignKey(ui => ui.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<User_Product_Favorites>()
+                .HasOne(s => s.Product)
+                .WithMany(us => us.User_Product_Favorites)
+                .HasForeignKey(si => si.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<User_Product_Ratings>()
+               .HasOne(u => u.User)
+               .WithMany(us => us.User_Product_Ratings)
+               .HasForeignKey(ui => ui.UserId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<User_Product_Ratings>()
+                .HasOne(s => s.Product)
+                .WithMany(us => us.User_Product_Ratings)
+                .HasForeignKey(si => si.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Shop> Shops { get; set; }
         public DbSet<User_Shop_Favorites> Users_Shops_Favorites { get; set; }
-        public DbSet<User_Shop_Ratings> User_Shop_Ratings { get; set; }
-        public DbSet<User_Shop_Locked> User_Shop_Locked { get; set; }
+        public DbSet<User_Shop_Ratings> Users_Shops_Ratings { get; set; }
+        public DbSet<User_Shop_Locked> Users_Shops_Locked { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<User_Product_Favorites> Users_Products_Favorites { get; set; }
+        public DbSet<User_Product_Ratings> Users_Products_Ratings { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
     }
+
 }
