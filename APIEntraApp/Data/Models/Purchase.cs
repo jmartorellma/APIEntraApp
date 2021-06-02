@@ -20,6 +20,8 @@ namespace APIEntraApp.Data.Models
         public PaymentMethod PaymentMethod { get; set; }
         public int PurchaseTypeId { get; set; }
         public PurchaseType PurchaseType { get; set; }
+        public int PaymentStatusId { get; set; }
+        public PaymentStatus PaymentStatus { get; set; }
         public List<Purchase_Cart> Purchase_Carts { get; set; }
     }
     

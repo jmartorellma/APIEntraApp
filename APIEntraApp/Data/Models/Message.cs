@@ -17,7 +17,7 @@ namespace APIEntraApp.Data.Models
 
         //Navigation Properties
         public int FromId { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser Sender { get; set; }
         public int ToId { get; set; }
         public ApplicationUser Reciever { get; set; }
     }

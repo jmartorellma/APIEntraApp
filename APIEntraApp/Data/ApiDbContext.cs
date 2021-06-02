@@ -20,7 +20,7 @@ namespace APIEntraApp.Data
                 .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
 
             builder.Entity<Message>()
-               .HasOne(u => u.User)
+               .HasOne(u => u.Sender)
                .WithMany(u => u.MessagesSent)
                .HasForeignKey(ui => ui.FromId)
                .OnDelete(DeleteBehavior.Restrict);
