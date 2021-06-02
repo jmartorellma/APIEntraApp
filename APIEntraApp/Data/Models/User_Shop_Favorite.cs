@@ -2,7 +2,7 @@
 
 namespace APIEntraApp.Data.Models
 {
-    public class User_Shop_Favorites
+    public class User_Shop_Favorite
     {
         public int UserId { get; set; }
         public ApplicationUser User { get; set; }

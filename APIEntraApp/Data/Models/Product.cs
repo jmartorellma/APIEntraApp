@@ -32,8 +32,10 @@ namespace APIEntraApp.Data.Models
         public Shop Shop { get; set; }
         public int StockId { get; set; }
         public Stock Stock { get; set; }
-        public List<User_Product_Favorites> User_Product_Favorites { get; set; }
-        public List<User_Product_Ratings> User_Product_Ratings { get; set; }
+        public List<User_Product_Favorite> User_Product_Favorites { get; set; }
+        public List<User_Product_Rating> User_Product_Ratings { get; set; }
+        public List<Product_Category> Product_Categories { get; set; }
+        public List<Product_Provider> Product_Providers { get; set; }
     }
     
 }

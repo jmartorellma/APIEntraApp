@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace APIEntraApp.Data.Models
 {
-    public class User_Shop_Ratings
+    public class User_Shop_Rating
     {
         [Key]
         public int      Id      { get; set; }

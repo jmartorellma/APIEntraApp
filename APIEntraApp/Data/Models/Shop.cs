@@ -31,11 +31,10 @@ namespace APIEntraApp.Data.Models
         //Navigation Properties
         public int OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
-        public List<User_Shop_Favorites> User_Shop_Favorites { get; set; }
-        public List<User_Shop_Ratings> User_Shop_Ratings { get; set; }
+        public List<User_Shop_Favorite> User_Shop_Favorites { get; set; }
+        public List<User_Shop_Rating> User_Shop_Ratings { get; set; }
         public List<User_Shop_Locked> User_Shop_Locked { get; set; }
-        //Navigation Properties
-        public Product Product { get; set; }
+        public List<Product> Products { get; set; }
     }
     
 }
