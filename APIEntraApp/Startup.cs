@@ -35,17 +35,11 @@ namespace APIEntraApp
                 config.UseSqlServer(connectionString);
             });
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>(config =>
-            {
-                config.Password.RequiredLength = 6;
-                config.Password.RequireDigit = false;
-                config.Password.RequireNonAlphanumeric = false;
-                config.Password.RequireUppercase = false;
-                config.Password.RequireLowercase = false;
-                config.User.RequireUniqueEmail = true;
-            })
-                .AddEntityFrameworkStores<ApiDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityCore<ApplicationUser>(options => { });
+            new IdentityBuilder(typeof(ApplicationUser), typeof(ApplicationRole), services)
+                .AddRoleManager<RoleManager<ApplicationRole>>()
+                .AddSignInManager<SignInManager<ApplicationUser>>()
+                .AddEntityFrameworkStores<ApiDbContext>();
 
             services.AddSingleton<IUserService, UserService>();
 

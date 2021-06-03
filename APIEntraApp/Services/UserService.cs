@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using APIEntraApp.DTOs;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Interfaces;
-using System.Security.Claims;
 
 namespace APIEntraApp.Services
 {
@@ -32,6 +31,34 @@ namespace APIEntraApp.Services
                 });                
             }
             catch(Exception e) 
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<UserDTO> GetUserById(int id, UserManager<ApplicationUser> userManager)
+        {
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(id.ToString());
+                if (user == null) 
+                {
+                    throw new Exception($"Usuario con id {id} no encontrado");
+                }
+
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Surname = user.Surname,
+                    IsActive = user.IsActive,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    CreationDate = user.CreationDate
+                };
+            }
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }

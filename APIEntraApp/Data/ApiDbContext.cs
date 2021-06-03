@@ -16,21 +16,23 @@ namespace APIEntraApp.Data
         {
             base.OnModelCreating(builder);
 
-            // AspNetUsers se crea en el IdentityServer
-            builder.Entity<ApplicationUser>()
-                .ToTable("AspNetRoleClaims", t => t.ExcludeFromMigrations());
-            builder.Entity<ApplicationUser>()
-                .ToTable("AspNetRoles", t => t.ExcludeFromMigrations());
-            builder.Entity<ApplicationUser>()
-                .ToTable("AspNetUserClaims", t => t.ExcludeFromMigrations());
-            builder.Entity<ApplicationUser>()
-                .ToTable("AspNetUserLogins", t => t.ExcludeFromMigrations());
-            builder.Entity<ApplicationUser>()
-                .ToTable("AspNetUserRoles", t => t.ExcludeFromMigrations());
-            builder.Entity<ApplicationUser>()
-               .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
-            builder.Entity<ApplicationUser>()
-                .ToTable("AspNetUserTokens", t => t.ExcludeFromMigrations());
+            // DESCOMENTAR PARA HACER LAS MIGACIONES
+            // Se necesita para la ejecucion pero AspNetUsers ya se crea en el IdentityServer
+
+            //builder.Entity<ApplicationUser>()
+            //    .ToTable("AspNetRoleClaims", t => t.ExcludeFromMigrations());
+            //builder.Entity<ApplicationRole>()
+            //    .ToTable("AspNetRoles", t => t.ExcludeFromMigrations());
+            //builder.Entity<ApplicationUser>()
+            //    .ToTable("AspNetUserClaims", t => t.ExcludeFromMigrations());
+            //builder.Entity<ApplicationUser>()
+            //    .ToTable("AspNetUserLogins", t => t.ExcludeFromMigrations());
+            //builder.Entity<ApplicationUser>()
+            //    .ToTable("AspNetUserRoles", t => t.ExcludeFromMigrations());
+            //builder.Entity<ApplicationUser>()
+            //   .ToTable("AspNetUsers", t => t.ExcludeFromMigrations());
+            //builder.Entity<ApplicationUser>()
+            //    .ToTable("AspNetUserTokens", t => t.ExcludeFromMigrations());
 
             builder.Entity<Message>()
                .HasOne(u => u.Sender)

@@ -9,5 +9,6 @@ namespace APIEntraApp.Services.Interfaces
     public interface IUserService
     {
         Task<List<UserDTO>> GetAllUsers(UserManager<ApplicationUser> userManager);
+        Task<UserDTO> GetUserById(int id, UserManager<ApplicationUser> userManager);
     }
 }

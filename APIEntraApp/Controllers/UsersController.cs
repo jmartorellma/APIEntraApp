@@ -1,31 +1,33 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using APIEntraApp.Data;
 
 namespace APIEntraApp.Controllers
 {
+    [Authorize(Roles = "SuperUser,Admin")]
     [ApiController]
-    [Authorize]
-    [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    [Route("/Users")]
+    public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ApiDbContext _apiContext;
         private readonly UserManager<ApplicationUser> _userManager;
-        public UserController(
+        public UsersController(
             UserManager<ApplicationUser> userManager,
+            ApiDbContext apiContext,
             IUserService userService)
         {
-            _userManager = userManager;
-            _userService = userService;
+             _userManager = userManager;
+             _apiContext = apiContext;
+             _userService = userService;
         }
 
-        [HttpGet("Users")]
+        [HttpGet]
         public async Task<IActionResult> GetUsers() 
         {
             try
@@ -38,8 +40,21 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                return Ok(await _userService.GetUserById(id, _userManager));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         //[AllowAnonymous]
-        //[Route("{id}")]
+        ////[Route("{id}")]
         //public IActionResult Opened(int id)
         //{
         //    try
@@ -53,8 +68,8 @@ namespace APIEntraApp.Controllers
         //}
     }
 
-    //public class ResponseResult 
-    //{
-    //    public string Result { get; set; }
-    //}
+    public class ResponseResult
+    {
+        public string Result { get; set; }
+    }
 }
