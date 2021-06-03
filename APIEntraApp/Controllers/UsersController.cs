@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
-using APIEntraApp.Data.Identity;
-using APIEntraApp.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIEntraApp.Data;
+using APIEntraApp.Data.Identity;
+using APIEntraApp.Services.Users.Core;
+using APIEntraApp.Services.Users.Models.Request;
 
 namespace APIEntraApp.Controllers
 {
-    [Authorize(Roles = "SuperUser,Admin")]
+    [Authorize]
     [ApiController]
     [Route("/Users")]
     public class UsersController : ControllerBase
@@ -28,11 +29,17 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers() 
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> GetAll() 
         {
             try
             {
-                return Ok(await _userService.GetAllUsers(_userManager));
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición inválida");
+                }
+
+                return Ok(await _userService.GetAll(_userManager));
             }
             catch (Exception e) 
             {
@@ -41,11 +48,17 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "SuperUser,Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                return Ok(await _userService.GetUserById(id, _userManager));
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición inválida");
+                }
+
+                return Ok(await _userService.GetById(id, _userManager));
             }
             catch (Exception e)
             {
@@ -53,23 +66,61 @@ namespace APIEntraApp.Controllers
             }
         }
 
-        //[AllowAnonymous]
-        ////[Route("{id}")]
-        //public IActionResult Opened(int id)
-        //{
-        //    try
-        //    {
-        //        return Ok(new ResponseResult { Result = "Open message from API" });
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return StatusCode(500, e.Message);
-        //    }
-        //}
+        [HttpPost]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> Create(UserPostRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de alta inválida");
+                }
+
+                return Ok(await _userService.Create(model, _userManager));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(UserPutRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de actualización inválida");
+                }
+
+                return Ok(await _userService.Update(model, _userManager));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de eliminar inválida");
+                }
+
+                return Ok(await _userService.Delete(id, _userManager));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 
-    public class ResponseResult
-    {
-        public string Result { get; set; }
-    }
 }

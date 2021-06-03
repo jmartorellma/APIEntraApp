@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IdentityServer.Models.Requests
+namespace APIEntraApp.Services.Users.Models.Request
 {
-    public class RegisterRequestModel
+    public class UserPostRequest
     {
         [Required]
         [StringLength(30, ErrorMessage = "El número de caracteres de {0} debe ser al menos {2} y 30 de máximo.", MinimumLength = 6)]
@@ -23,6 +23,9 @@ namespace IdentityServer.Models.Requests
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+
+        [Required]
+        public string Role { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

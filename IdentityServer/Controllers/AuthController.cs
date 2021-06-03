@@ -56,6 +56,12 @@ namespace IdentityServer.Controllers
                     throw new Exception("Usuario o Contraseña no encotrado en la llamada");
                 }
 
+                ApplicationUser user = await _userManager.FindByNameAsync(username);
+                if (user != null && !user.IsActive) 
+                {
+                    throw new Exception("Tu usuario se encuentra desactivado. Contacta con el administrador.");
+                }
+
                 var signInResult = await _signInManager.PasswordSignInAsync(username, password, false, false);
 
                 if (!signInResult.Succeeded)
@@ -123,7 +129,7 @@ namespace IdentityServer.Controllers
                     return StatusCode(500, $"ERROR asignando el rol de usuario - {roleresult.Errors}");
                 }
 
-                await _signInManager.SignInAsync(applicationUser, false);
+                // await _signInManager.SignInAsync(applicationUser, false);
 
                 return Ok(new RegisterResponseModel 
                 { 
