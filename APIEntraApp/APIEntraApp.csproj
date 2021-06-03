@@ -17,6 +17,16 @@
 
   <ItemGroup>
     <Folder Include="Data\BAK\" />
+    <Folder Include="Services\Category\" />
+    <Folder Include="Services\Cart\" />
+    <Folder Include="Services\Delivery\" />
+    <Folder Include="Services\PaymentStatus\" />
+    <Folder Include="Services\PurchaseType\" />
+    <Folder Include="Services\PaymentMethod\" />
+    <Folder Include="Services\Purchase\" />
+    <Folder Include="Services\Provider\" />
+    <Folder Include="Services\Product\" />
+    <Folder Include="Services\Shop\" />
   </ItemGroup>
 
 </Project>

@@ -87,19 +87,19 @@ namespace IdentityServer.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return StatusCode(500, "Petición de registro inválida");
+                    throw new Exception("Petición de registro inválida");
                 }
 
                 var userFound = await _userManager.FindByEmailAsync(registerModel.Email);
                 if (userFound != null) 
                 {
-                    return StatusCode(500, $"Ya existe un usuario en el sisitema con el Email {registerModel.Email}");
+                    throw new Exception($"Ya existe un usuario en el sisitema con el Email {registerModel.Email}");
                 }
 
                 userFound = await _userManager.FindByNameAsync(registerModel.Username);
                 if (userFound != null)
                 {
-                    return StatusCode(500, $"Ya existe un usuario en el sisitema con el Usuario {registerModel.Username}");
+                    throw new Exception($"Ya existe un usuario en el sisitema con el Usuario {registerModel.Username}");
                 }
 
                 ApplicationUser applicationUser = new ApplicationUser
@@ -117,7 +117,7 @@ namespace IdentityServer.Controllers
 
                 if (!createResult.Succeeded)
                 {
-                    return StatusCode(500, $"ERROR dando de alta el usuario - {createResult.Errors}");
+                    throw new Exception($"ERROR dando de alta el usuario - {createResult.Errors}");
                 }
 
                 var user = await _userManager.FindByEmailAsync(applicationUser.Email);
@@ -126,7 +126,7 @@ namespace IdentityServer.Controllers
                 if (!roleresult.Succeeded) 
                 {
                     await _userManager.DeleteAsync(user);
-                    return StatusCode(500, $"ERROR asignando el rol de usuario - {roleresult.Errors}");
+                    throw new Exception($"ERROR asignando el rol de usuario - {roleresult.Errors}");
                 }
 
                 // await _signInManager.SignInAsync(applicationUser, false);
@@ -177,20 +177,20 @@ namespace IdentityServer.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return StatusCode(500, "Petición de restablecer contarseña inválida");
+                    throw new Exception("Petición de restablecer contarseña inválida");
                 }
 
                 var user = await _userManager.FindByEmailAsync(emailModel.Email);
                 if (user == null)
                 {
-                    return StatusCode(500, $"No existe ningún usuario con el email {emailModel.Email}");
+                    throw new Exception($"No existe ningún usuario con el email {emailModel.Email}");
                 }
 
                 Stream stream = GetType().Assembly.GetManifestResourceStream(_configuration["PathMailResetTemplate"]);
 
                 if (stream == null)
                 {
-                    return StatusCode(500, "Error catgando la plantilla del correo");
+                    throw new Exception("Error catgando la plantilla del correo");
                 }
 
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);

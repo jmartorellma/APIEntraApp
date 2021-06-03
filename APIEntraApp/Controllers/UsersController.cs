@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using APIEntraApp.Data;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Users.Core;
 using APIEntraApp.Services.Users.Models.Request;
@@ -16,15 +15,12 @@ namespace APIEntraApp.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ApiDbContext _apiContext;
         private readonly UserManager<ApplicationUser> _userManager;
         public UsersController(
             UserManager<ApplicationUser> userManager,
-            ApiDbContext apiContext,
             IUserService userService)
         {
              _userManager = userManager;
-             _apiContext = apiContext;
              _userService = userService;
         }
 
