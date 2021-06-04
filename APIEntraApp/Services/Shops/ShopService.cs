@@ -30,7 +30,7 @@ namespace APIEntraApp.Services.Shops
 
                 return shops;
             }
-            catch(Exception e) 
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
@@ -41,7 +41,7 @@ namespace APIEntraApp.Services.Shops
             try
             {
                 Shop shop = await apiDbContext.Shops.FindAsync(id);
-                if (shop == null) 
+                if (shop == null)
                 {
                     throw new Exception($"Tienda con id {id} no encontrada");
                 }
@@ -92,6 +92,62 @@ namespace APIEntraApp.Services.Shops
                 Shop createdShop = apiDbContext.Shops.First(s => s.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
 
                 return await ModelToDTOAsync(createdShop, apiDbContext);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<string> AddPaymentethodAsync(ShopPaymentMethodPostRequest model, ApiDbContext apiDbContext) 
+        {
+            try
+            {
+                Shop shop = await apiDbContext.Shops.FindAsync(model.ShopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {model.ShopId} no encontrada");
+                }
+
+                PaymentMethod paymentMethod = await apiDbContext.PaymentMethods.FindAsync(model.PaymentMethodId);
+                if (paymentMethod == null)
+                {
+                    throw new Exception($"Método de pago con id {model.PaymentMethodId} no encontrado");
+                }
+
+                shop.AllowedPaymentMethods.Add(paymentMethod);
+
+                await apiDbContext.SaveChangesAsync();
+
+                return paymentMethod.Code;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<string> AddAllowedPurchaseTypeAsync(ShopPurchaseTypePostRequest model, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                Shop shop = await apiDbContext.Shops.FindAsync(model.ShopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {model.ShopId} no encontrada");
+                }
+
+                PurchaseType purchaseType = await apiDbContext.PurchaseTypes.FindAsync(model.PurchaseTypeId);
+                if (purchaseType == null)
+                {
+                    throw new Exception($"Tipo de pedido con id {model.PurchaseTypeId} no encontrado");
+                }
+
+                shop.AllowedPurchaseTypes.Add(purchaseType);
+
+                await apiDbContext.SaveChangesAsync();
+
+                return purchaseType.Code;
             }
             catch (Exception e)
             {
@@ -162,6 +218,62 @@ namespace APIEntraApp.Services.Shops
                 await apiDbContext.SaveChangesAsync();
 
                 return shop.Id;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<string> RemovePaymentMethodAsync(ShopPaymentMethodDeleteRequest model, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                Shop shop = await apiDbContext.Shops.FindAsync(model.ShopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {model.ShopId} no encontrada");
+                }
+
+                PaymentMethod paymentMethod = await apiDbContext.PaymentMethods.FindAsync(model.PaymentMethodId);
+                if (paymentMethod == null)
+                {
+                    throw new Exception($"Método de pago con id {model.PaymentMethodId} no encontrado");
+                }
+
+                shop.AllowedPaymentMethods.Remove(paymentMethod);
+
+                await apiDbContext.SaveChangesAsync();
+
+                return paymentMethod.Code;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<string> RemovePurchaseTypeAsync(ShopPurchaseTypeDeleteRequest model, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                Shop shop = await apiDbContext.Shops.FindAsync(model.ShopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {model.ShopId} no encontrada");
+                }
+
+                PurchaseType purchaseType = await apiDbContext.PurchaseTypes.FindAsync(model.PurchaseTypeId);
+                if (purchaseType == null)
+                {
+                    throw new Exception($"Tipo de pedido con id {model.PurchaseTypeId} no encontrado");
+                }
+
+                shop.AllowedPurchaseTypes.Remove(purchaseType);
+
+                await apiDbContext.SaveChangesAsync();
+
+                return purchaseType.Code;
             }
             catch (Exception e)
             {

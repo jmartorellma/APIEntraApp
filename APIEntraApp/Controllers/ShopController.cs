@@ -80,6 +80,44 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpPost("PaymentMethod")]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> AddPaymentMethod(ShopPaymentMethodPostRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de alta inválida");
+                }
+
+                return Ok(await _shopService.AddPaymentethodAsync(model, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("PurchaseType")]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> AddPurchaseType(ShopPurchaseTypePostRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de alta inválida");
+                }
+
+                return Ok(await _shopService.AddAllowedPurchaseTypeAsync(model, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPut]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Update(ShopPutRequest model)
@@ -111,6 +149,44 @@ namespace APIEntraApp.Controllers
                 }
 
                 return Ok(await _shopService.DeleteAsync(id, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("PaymentMethod")]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> RemovePaymentMethod(ShopPaymentMethodDeleteRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de eliminar inválida");
+                }
+
+                return Ok(await _shopService.RemovePaymentMethodAsync(model, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("PurchaseType")]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> RemovePurchaseType(ShopPurchaseTypeDeleteRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de eliminar inválida");
+                }
+
+                return Ok(await _shopService.RemovePurchaseTypeAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
