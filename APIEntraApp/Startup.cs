@@ -4,15 +4,17 @@ using APIEntraApp.Data.InitData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using APIEntraApp.Services.Interfaces;
-using APIEntraApp.Services;
 using APIEntraApp.Data.Identity;
-using Microsoft.AspNetCore.Identity;
-using System;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using APIEntraApp.Services.Users.Core;
+using APIEntraApp.Services.Users;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace APIEntraApp
 {
@@ -40,6 +42,12 @@ namespace APIEntraApp
                 .AddRoleManager<RoleManager<ApplicationRole>>()
                 .AddSignInManager<SignInManager<ApplicationUser>>()
                 .AddEntityFrameworkStores<ApiDbContext>();
+
+            services.Configure<FormOptions>(options => {
+                options.ValueLengthLimit = int.MaxValue;
+                options.MultipartBodyLengthLimit = int.MaxValue;
+                options.MemoryBufferThreshold = int.MaxValue;
+            });
 
             services.AddSingleton<IUserService, UserService>();
 
@@ -72,6 +80,13 @@ namespace APIEntraApp
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), _configuration["ResourcesFolder"].ToString())),
+                RequestPath = new PathString($"/{_configuration["ResourcesFolder"]}")
+            });
             app.UseCors("AllowAll");
             app.UseRouting();
             app.UseAuthentication();
@@ -81,7 +96,6 @@ namespace APIEntraApp
                 endpoints.MapControllers();
             });
         }
-
         
     }
 }

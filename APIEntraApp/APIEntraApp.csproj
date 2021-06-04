@@ -17,6 +17,9 @@
 
   <ItemGroup>
     <Folder Include="Data\BAK\" />
+    <Folder Include="Resources\Images\Users\" />
+    <Folder Include="Resources\Images\Shops\" />
+    <Folder Include="Resources\Images\Products\" />
     <Folder Include="Services\Categories\" />
     <Folder Include="Services\Carts\" />
     <Folder Include="Services\Deliveries\" />
