@@ -7,12 +7,12 @@ using APIEntraApp.Services.Users.Models.Request;
 
 namespace APIEntraApp.Services.Users.Core
 {
-    public interface IUserService
+    public interface IShopService
     {
-        Task<List<UserDTO>> GetAll(UserManager<ApplicationUser> userManager);
-        Task<UserDTO> GetById(int id, UserManager<ApplicationUser> userManager);
-        Task<UserDTO> Create(UserPostRequest model, UserManager<ApplicationUser> userManager);
-        Task<UserDTO> Update(UserPutRequest model, UserManager<ApplicationUser> userManager);
-        Task<UserDTO> Delete(int id, UserManager<ApplicationUser> userManager);
+        Task<List<UserDTO>> GetAllAsync(UserManager<ApplicationUser> userManager);
+        Task<UserDTO> GetByIdAsync(int id, UserManager<ApplicationUser> userManager);
+        Task<UserDTO> CreateAsync(UserPostRequest model, UserManager<ApplicationUser> userManager);
+        Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager);
+        Task<int> DeleteAsync(int id, UserManager<ApplicationUser> userManager);
     }
 }

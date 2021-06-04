@@ -10,19 +10,17 @@ using APIEntraApp.Services.Users.Models.Request;
 
 namespace APIEntraApp.Services.Users
 {
-    public class UserService : IUserService
+    public class ShopService : IShopService
     {
-        public async Task<List<UserDTO>> GetAll(UserManager<ApplicationUser> userManager)
+        public async Task<List<UserDTO>> GetAllAsync(UserManager<ApplicationUser> userManager)
         {
             try
             {
                 List<UserDTO> users = new List<UserDTO>();
 
-                List<ApplicationUser> userLIst = userManager.Users.ToList();
-
-                foreach (ApplicationUser appUser in userLIst) 
+                foreach (ApplicationUser appUser in userManager.Users.ToList()) 
                 {
-                    UserDTO user = await ModelToDTO(appUser, userManager);
+                    UserDTO user = await ModelToDTOAsync(appUser, userManager);
                     if (user != null) 
                     {
                         users.Add(user);
@@ -37,7 +35,7 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<UserDTO> GetById(int id, UserManager<ApplicationUser> userManager)
+        public async Task<UserDTO> GetByIdAsync(int id, UserManager<ApplicationUser> userManager)
         {
             try
             {
@@ -53,7 +51,7 @@ namespace APIEntraApp.Services.Users
                     throw new Exception($"Rol del usuario {user.UserName} no encontrado");
                 }
 
-                return await ModelToDTO(user, userManager);
+                return await ModelToDTOAsync(user, userManager);
             }
             catch (Exception e)
             {
@@ -61,7 +59,7 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<UserDTO> Create(UserPostRequest model, UserManager<ApplicationUser> userManager)
+        public async Task<UserDTO> CreateAsync(UserPostRequest model, UserManager<ApplicationUser> userManager)
         {
             try
             {
@@ -123,7 +121,7 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<UserDTO> Update(UserPutRequest model, UserManager<ApplicationUser> userManager)
+        public async Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager)
         {
             try
             {
@@ -168,7 +166,7 @@ namespace APIEntraApp.Services.Users
                     throw new Exception($"ERROR actualizando los datos de usuario - {upadateResult.Errors}");
                 }
 
-                return await ModelToDTO(appUser, userManager);
+                return await ModelToDTOAsync(appUser, userManager);
             }
             catch (Exception e)
             {
@@ -176,7 +174,7 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<UserDTO> Delete(int id, UserManager<ApplicationUser> userManager)
+        public async Task<int> DeleteAsync(int id, UserManager<ApplicationUser> userManager)
         {
             try
             {
@@ -192,7 +190,7 @@ namespace APIEntraApp.Services.Users
                     throw new Exception($"ERROR eliminando el ususario {user.UserName}");
                 }
 
-                return await ModelToDTO(user, userManager);
+                return user.Id;
             }
             catch (Exception e)
             {
@@ -202,7 +200,7 @@ namespace APIEntraApp.Services.Users
 
         #region Support Methods
 
-        public async Task<UserDTO> ModelToDTO(ApplicationUser user, UserManager<ApplicationUser> userManager) 
+        private async Task<UserDTO> ModelToDTOAsync(ApplicationUser user, UserManager<ApplicationUser> userManager) 
         {
             IList<string> roleList = await userManager.GetRolesAsync(user);
             if (roleList == null || !roleList.Any())

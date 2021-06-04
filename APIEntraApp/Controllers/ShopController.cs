@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using APIEntraApp.Data.Identity;
-using APIEntraApp.Services.Users.Core;
-using APIEntraApp.Services.Users.Models.Request;
+using APIEntraApp.Data;
+using APIEntraApp.Services.Shops.Core;
+using APIEntraApp.Services.Shops.Models.Request;
 
 namespace APIEntraApp.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("/Users")]
-    public class UsersController : ControllerBase
+    [Route("/Shop")]
+    public class ShopController : ControllerBase
     {
-        private readonly IShopService _userService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        public UsersController(
-            UserManager<ApplicationUser> userManager,
-            IShopService userService)
+        private readonly IShopService _shopService;
+        private readonly ApiDbContext _apiDbContext;
+        public ShopController(
+            ApiDbContext apiDbContext,
+            IShopService shopService)
         {
-             _userManager = userManager;
-             _userService = userService;
+            _apiDbContext = apiDbContext;
+            _shopService = shopService;
         }
 
         [HttpGet]
@@ -35,7 +34,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición inválida");
                 }
 
-                return Ok(await _userService.GetAllAsync(_userManager));
+                return Ok(await _shopService.GetAllAsync(_apiDbContext));
             }
             catch (Exception e) 
             {
@@ -44,7 +43,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -54,7 +53,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición inválida");
                 }
 
-                return Ok(await _userService.GetByIdAsync(id, _userManager));
+                return Ok(await _shopService.GetByIdAsync(id, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -64,7 +63,7 @@ namespace APIEntraApp.Controllers
 
         [HttpPost]
         [Authorize(Roles = "SuperUser,Admin")]
-        public async Task<IActionResult> Create(UserPostRequest model)
+        public async Task<IActionResult> Create(ShopPostRequest model)
         {
             try
             {
@@ -73,7 +72,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de alta inválida");
                 }
 
-                return Ok(await _userService.CreateAsync(model, _userManager));
+                return Ok(await _shopService.CreateAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -82,7 +81,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(UserPutRequest model)
+        public async Task<IActionResult> Update(ShopPutRequest model)
         {
             try
             {
@@ -91,7 +90,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de actualización inválida");
                 }
 
-                return Ok(await _userService.UpdateAsync(model, _userManager));
+                return Ok(await _shopService.UpdateAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -110,7 +109,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de eliminar inválida");
                 }
 
-                return Ok(await _userService.DeleteAsync(id, _userManager));
+                return Ok(await _shopService.DeleteAsync(id, _apiDbContext));
             }
             catch (Exception e)
             {

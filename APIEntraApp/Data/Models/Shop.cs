@@ -12,6 +12,8 @@ namespace APIEntraApp.Data.Models
         [Required]
         public string   Nif          { get; set; }
         [Required]
+        public bool     IsActive     { get; set; }
+        [Required]
         public string   Code         { get; set; }
         [Required]
         public string   Name         { get; set; }
