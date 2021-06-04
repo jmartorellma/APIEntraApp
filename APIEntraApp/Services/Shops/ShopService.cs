@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using APIEntraApp.Data;
+using APIEntraApp.Data.Models;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Shops.Core;
 using APIEntraApp.Services.Shops.Models.DTOs;
 using APIEntraApp.Services.Shops.Models.Request;
-using APIEntraApp.Data.Models;
 
 namespace APIEntraApp.Services.Shops
 {

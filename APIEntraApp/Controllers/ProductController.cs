@@ -10,12 +10,12 @@ namespace APIEntraApp.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("/Shop")]
-    public class ShopController : ControllerBase
+    [Route("/Product")]
+    public class ProductController : ControllerBase
     {
         private readonly IShopService _shopService;
         private readonly ApiDbContext _apiDbContext;
-        public ShopController(
+        public ProductController(
             ApiDbContext apiDbContext,
             IShopService shopService)
         {
@@ -62,7 +62,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Create(ShopPostRequest model)
         {
             try
@@ -100,7 +100,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Delete(int id)
         {
             try
