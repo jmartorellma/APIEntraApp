@@ -37,6 +37,8 @@ namespace APIEntraApp.Data.Models
         public List<User_Shop_Rating> User_Shop_Ratings { get; set; }
         public List<User_Shop_Locked> User_Shop_Locked { get; set; }
         public List<Product> Products { get; set; }
+        public List<PaymentMethod> AllowedPaymentMethods { get; set; }
+        public List<PurchaseType> AllowedPurchaseTypes { get; set; }
     }
     
 }
