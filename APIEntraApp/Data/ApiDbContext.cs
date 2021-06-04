@@ -139,21 +139,6 @@ namespace APIEntraApp.Data
                 .HasForeignKey(si => si.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Product_Provider>()
-              .HasKey(k => new { k.ProductId, k.ProviderId });
-
-            builder.Entity<Product_Provider>()
-                .HasOne(u => u.Product)
-                .WithMany(us => us.Product_Providers)
-                .HasForeignKey(ui => ui.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Product_Provider>()
-                .HasOne(s => s.Provider)
-                .WithMany(us => us.Products_Provider)
-                .HasForeignKey(si => si.ProviderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.Entity<User_Product_Cart>()
                .HasOne(u => u.User)
                .WithMany(us => us.User_Products_Cart)
@@ -200,7 +185,6 @@ namespace APIEntraApp.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product_Category> Products_Categories { get; set; }
         public DbSet<Provider> Providers { get; set; }
-        public DbSet<Product_Provider> Products_Providers { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<PurchaseType> PurchaseTypes { get; set; }
         public DbSet<PaymentStatus> PaymentStatus { get; set; }        

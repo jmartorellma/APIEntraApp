@@ -10,7 +10,7 @@ using APIEntraApp.Services.Users.Models.Request;
 
 namespace APIEntraApp.Services.Users
 {
-    public class ShopService : IShopService
+    public class UserService : IUserService
     {
         public async Task<List<UserDTO>> GetAllAsync(UserManager<ApplicationUser> userManager)
         {

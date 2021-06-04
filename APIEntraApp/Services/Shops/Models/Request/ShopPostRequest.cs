@@ -14,7 +14,6 @@ namespace APIEntraApp.Services.Shops.Models.Request
         public string   City         { get; set; }
         public string   Picture      { get; set; }
         public string   Web          { get; set; }
-        public DateTime CreationDate { get; set; }
         public int      OwnerId      { get; set; }
     }
 }

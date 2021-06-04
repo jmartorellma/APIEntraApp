@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIEntraApp.Data;
-using APIEntraApp.Services.Shops.Core;
-using APIEntraApp.Services.Shops.Models.Request;
+using APIEntraApp.Services.Products.Core;
+using APIEntraApp.Services.Products.Models.Request;
 
 namespace APIEntraApp.Controllers
 {
@@ -13,14 +13,14 @@ namespace APIEntraApp.Controllers
     [Route("/Product")]
     public class ProductController : ControllerBase
     {
-        private readonly IShopService _shopService;
+        private readonly IProductService _productService;
         private readonly ApiDbContext _apiDbContext;
         public ProductController(
             ApiDbContext apiDbContext,
-            IShopService shopService)
+            IProductService productService)
         {
             _apiDbContext = apiDbContext;
-            _shopService = shopService;
+            _productService = productService;
         }
 
         [HttpGet]
@@ -34,7 +34,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición inválida");
                 }
 
-                return Ok(await _shopService.GetAllAsync(_apiDbContext));
+                return Ok(await _productService.GetAllAsync(_apiDbContext));
             }
             catch (Exception e) 
             {
@@ -53,7 +53,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición inválida");
                 }
 
-                return Ok(await _shopService.GetByIdAsync(id, _apiDbContext));
+                return Ok(await _productService.GetByIdAsync(id, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -63,7 +63,7 @@ namespace APIEntraApp.Controllers
 
         [HttpPost]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
-        public async Task<IActionResult> Create(ShopPostRequest model)
+        public async Task<IActionResult> Create(ProductPostRequest model)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de alta inválida");
                 }
 
-                return Ok(await _shopService.CreateAsync(model, _apiDbContext));
+                return Ok(await _productService.CreateAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -82,7 +82,7 @@ namespace APIEntraApp.Controllers
 
         [HttpPut]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
-        public async Task<IActionResult> Update(ShopPutRequest model)
+        public async Task<IActionResult> Update(ProductPutRequest model)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de actualización inválida");
                 }
 
-                return Ok(await _shopService.UpdateAsync(model, _apiDbContext));
+                return Ok(await _productService.UpdateAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -110,7 +110,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de eliminar inválida");
                 }
 
-                return Ok(await _shopService.DeleteAsync(id, _apiDbContext));
+                return Ok(await _productService.DeleteAsync(id, _apiDbContext));
             }
             catch (Exception e)
             {

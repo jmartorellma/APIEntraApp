@@ -121,6 +121,12 @@ namespace APIEntraApp.Services.Shops
                     throw new Exception($"Ya existe otra tienda {model.Name}");
                 }
 
+                var shopFoundCode = apiDbContext.Shops.FirstOrDefault(u => u.Id != model.Id && u.Name.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
+                if (shopFoundCode != null)
+                {
+                    throw new Exception($"Ya existe otra tienda con el código {model.Code}");
+                }
+
                 shop.IsActive = model.IsActive;
                 shop.Code = model.Code;
                 shop.Name = model.Name;

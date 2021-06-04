@@ -7,7 +7,7 @@ using APIEntraApp.Services.Users.Models.Request;
 
 namespace APIEntraApp.Services.Users.Core
 {
-    public interface IShopService
+    public interface IUserService
     {
         Task<List<UserDTO>> GetAllAsync(UserManager<ApplicationUser> userManager);
         Task<UserDTO> GetByIdAsync(int id, UserManager<ApplicationUser> userManager);

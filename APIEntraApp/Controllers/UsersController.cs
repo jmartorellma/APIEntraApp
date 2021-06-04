@@ -14,11 +14,11 @@ namespace APIEntraApp.Controllers
     [Route("/Users")]
     public class UsersController : ControllerBase
     {
-        private readonly IShopService _userService;
+        private readonly IUserService _userService;
         private readonly UserManager<ApplicationUser> _userManager;
         public UsersController(
             UserManager<ApplicationUser> userManager,
-            IShopService userService)
+            IUserService userService)
         {
              _userManager = userManager;
              _userService = userService;

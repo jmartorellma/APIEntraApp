@@ -22,7 +22,6 @@ namespace APIEntraApp.Data.Models
         public decimal  Tax          { get; set; }
         [Required]                   
         public decimal  Pvp          { get; set; }
-        [Required]
         public string   Picture      { get; set; }
         [Required]
         public DateTime CreationDate { get; set; }
@@ -30,12 +29,13 @@ namespace APIEntraApp.Data.Models
         //Navigation Properties
         public int ShopId { get; set; }
         public Shop Shop { get; set; }
+        public int ProviderId { get; set; }
+        public Provider Provider { get; set; }
         public int StockId { get; set; }
         public Stock Stock { get; set; }
         public List<User_Product_Favorite> User_Product_Favorites { get; set; }
         public List<User_Product_Rating> User_Product_Ratings { get; set; }
         public List<Product_Category> Product_Categories { get; set; }
-        public List<Product_Provider> Product_Providers { get; set; }
         public List<User_Product_Cart> Users_Product_Cart { get; set; }
     }
     
