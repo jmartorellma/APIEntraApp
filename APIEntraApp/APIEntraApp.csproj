@@ -24,7 +24,6 @@
     <Folder Include="Services\Carts\" />
     <Folder Include="Services\Deliveries\" />
     <Folder Include="Services\PaymentStatuses\" />
-    <Folder Include="Services\PurchaseTypes\" />
     <Folder Include="Services\Purchases\" />
     <Folder Include="Services\Providers\" />
   </ItemGroup>

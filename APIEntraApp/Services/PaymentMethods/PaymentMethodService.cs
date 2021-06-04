@@ -57,7 +57,7 @@ namespace APIEntraApp.Services.PaymentMethods
                     Code = model.Code,
                     Name = model.Name,
                     Value = model.Value,
-                    CreationDate = DateTime.Now,
+                    CreationDate = DateTime.Now
                 };
 
                 await apiDbContext.PaymentMethods.AddAsync(newPaymentMethod);
@@ -134,6 +134,7 @@ namespace APIEntraApp.Services.PaymentMethods
                 Id = paymentMethod.Id,
                 Code = paymentMethod.Code,
                 Name = paymentMethod.Name,
+                Value = paymentMethod.Value,
                 CreationDate = paymentMethod.CreationDate
             };
         }
