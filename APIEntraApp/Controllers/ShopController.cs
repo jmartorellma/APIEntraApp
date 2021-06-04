@@ -81,7 +81,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost("PaymentMethod")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> AddPaymentMethod(ShopPaymentMethodPostRequest model)
         {
             try
@@ -100,7 +100,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost("PurchaseType")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> AddPurchaseType(ShopPurchaseTypePostRequest model)
         {
             try
@@ -157,7 +157,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpDelete("PaymentMethod")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> RemovePaymentMethod(ShopPaymentMethodDeleteRequest model)
         {
             try
@@ -176,7 +176,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpDelete("PurchaseType")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> RemovePurchaseType(ShopPurchaseTypeDeleteRequest model)
         {
             try
