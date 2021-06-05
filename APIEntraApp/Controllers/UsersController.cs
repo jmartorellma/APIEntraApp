@@ -92,7 +92,7 @@ namespace APIEntraApp.Controllers
             }
         }
 
-        [HttpPost("Favorites")]
+        [HttpPost("Shop/Favorites")]
         public async Task<IActionResult> Addfavorites(UserAddFavoritesPostRequest model)
         {
             try
@@ -177,8 +177,8 @@ namespace APIEntraApp.Controllers
             }
         }
 
-        [HttpDelete("Favorites")]
-        public async Task<IActionResult> RemoveFavorites(int id)
+        [HttpDelete("Shop/Favorites")]
+        public async Task<IActionResult> RemoveFavorites(UserRemoveFavoritesDeleteRequest model)
         {
             try
             {
@@ -187,7 +187,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de eliminar inválida");
                 }
 
-                return Ok(await _userService.DeleteAsync(id, _userManager));
+                return Ok(await _userService.RemoveShopFavoritesAsync(model.UserId, model.ShopId, _userManager, _apiDbContext));
             }
             catch (Exception e)
             {

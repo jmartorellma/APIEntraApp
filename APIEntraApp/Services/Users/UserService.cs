@@ -203,6 +203,52 @@ namespace APIEntraApp.Services.Users
             }
         }
 
+        public async Task<int> RateShopsAsync(UserShopRatePostRequestcs model, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext) 
+        {
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(model.UserId.ToString());
+                if (user == null)
+                {
+                    throw new Exception($"Usuario con id {model.UserId} no encontrado");
+                }
+
+                Shop shop = await apiDbContext.Shops.FindAsync(model.ShopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {model.ShopId} no encontrada");
+                }
+
+                User_Shop_Rating userRate = await apiDbContext.Users_Shops_Ratings.FindAsync(new { model.UserId, model.ShopId });
+
+                if (userRate == null)
+                {
+                    await apiDbContext.Users_Shops_Ratings.AddAsync(new User_Shop_Rating
+                    {
+                        Rate = model.Rate,
+                        Date = DateTime.Now,
+                        Comment = model.Comment,
+                        UserId = model.UserId,
+                        ShopId = model.ShopId
+                    });
+                }
+                else 
+                {
+                    userRate.Rate = model.Rate;
+                    userRate.Date = DateTime.Now;
+                    userRate.Comment = model.Comment;
+                }
+
+                await apiDbContext.SaveChangesAsync();
+
+                return model.ShopId;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager)
         {
             try

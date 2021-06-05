@@ -6,8 +6,6 @@ namespace APIEntraApp.Data.Models
 {
     public class User_Shop_Rating
     {
-        [Key]
-        public int      Id      { get; set; }
         [Required]
         public int      Rate    { get; set; }
         [Required]

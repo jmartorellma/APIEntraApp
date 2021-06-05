@@ -17,6 +17,7 @@ namespace APIEntraApp.Services.Users.Core
         Task<UserDTO> CreateAsync(UserPostRequest model, UserManager<ApplicationUser> userManager);
         Task<string> UpdatePictureAsync(IFormFile file, int userId, IConfiguration configuration, UserManager<ApplicationUser> userManager);
         Task<int> AddShopFavoritesAsync(int userId, int shopId, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext);
+        Task<int> RateShopsAsync(UserShopRatePostRequestcs model, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext);
         Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager);
         Task<int> DeleteAsync(int id, UserManager<ApplicationUser> userManager);
         Task<int> RemoveShopFavoritesAsync(int userId, int shopId, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext);

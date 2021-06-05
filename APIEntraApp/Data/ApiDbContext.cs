@@ -62,6 +62,9 @@ namespace APIEntraApp.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<User_Shop_Rating>()
+                .HasKey(k => new { k.UserId, k.ShopId });
+
+            builder.Entity<User_Shop_Rating>()
                 .HasOne(u => u.User)
                 .WithMany(us => us.User_Shop_Ratings)
                 .HasForeignKey(ui => ui.UserId)
