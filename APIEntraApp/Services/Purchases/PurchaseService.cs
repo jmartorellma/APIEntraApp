@@ -83,6 +83,7 @@ namespace APIEntraApp.Services.Purchases
                 {
                     StatusDate = DateTime.Now,
                     CreationDate = DateTime.Now,
+                    Code = DateTime.Now.ToString("ddMMyyyyHHmmss"),
                     PaymentMethodId = model.PaymentMethoId,
                     PurchaseTypeId = model.PurchaseTypeId,
                     PaymentStatusId = model.PaymentStatusId

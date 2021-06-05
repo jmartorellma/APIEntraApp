@@ -25,6 +25,9 @@ namespace IdentityServer.Data
                 .HasMaxLength(256);
 
             modelBuilder.Entity<ApplicationUser>()
+                .Property(e => e.Picture);
+            
+            modelBuilder.Entity<ApplicationUser>()
                 .Property(e => e.CreationDate);
 
             modelBuilder.Entity<ApplicationUser>()

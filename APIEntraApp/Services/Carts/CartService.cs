@@ -46,10 +46,15 @@ namespace APIEntraApp.Services.Carts
         {
             try
             {
-                List<User_Product_Cart> userCartList = apiDbContext.Users_Products_Cart.Where(pc => !pc.IsCompleted && pc.UserId == model.UserId).ToList();
-                if (userCartList == null)
+                Product product = await apiDbContext.Products.FindAsync(model.ProductId);
+                if (product == null) 
                 {
-                    throw new Exception($"Error cargadndo el carro del usuario con id {model.UserId}");
+                    throw new Exception($"Error cargadndo el producto con id {model.ProductId}");
+                }
+
+                if (product.Stock.Avaliable < model.Quantity) 
+                {
+                    throw new Exception($"Stock insuficiente. Unidades restantes: {product.Stock.Avaliable}");
                 }
 
                 apiDbContext.Users_Products_Cart.Add(new User_Product_Cart
@@ -59,6 +64,8 @@ namespace APIEntraApp.Services.Carts
                     UserId = model.UserId,
                     Quantity = model.Quantity
                 });
+
+                product.Stock.Avaliable -= model.Quantity;
 
                 await apiDbContext.SaveChangesAsync();
 

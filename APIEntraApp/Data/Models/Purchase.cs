@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace APIEntraApp.Data.Models
 {
@@ -10,8 +9,7 @@ namespace APIEntraApp.Data.Models
         [Key]
         public int      Id           { get; set; }
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long     Code         { get; set; }
+        public string   Code         { get; set; }
         [Required]
         public decimal  Amount       { get; set; }
         [Required]
