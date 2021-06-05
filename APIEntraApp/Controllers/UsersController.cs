@@ -93,16 +93,70 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost("Shop/Favorites")]
-        public async Task<IActionResult> Addfavorites(UserAddFavoritesPostRequest model)
+        public async Task<IActionResult> AddShopFavorites(UserAddShopFavoritesPostRequest model)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    throw new Exception("Petición de alta inválida");
+                    throw new Exception("Petición de favoritos inválida");
                 }
 
                 return Ok(await _userService.AddShopFavoritesAsync(model.UserId, model.ShopId, _userManager, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("Shop/Rate")]
+        public async Task<IActionResult> ShopRate(UserShopRatePostRequestcs model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de puntuar inválida");
+                }
+
+                return Ok(await _userService.RateShopsAsync(model, _userManager, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("Product/Favorites")]
+        public async Task<IActionResult> AddProductFavorites(UserAddProductFavoritesPostRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de favoritos inválida");
+                }
+
+                return Ok(await _userService.AddProductFavoritesAsync(model.UserId, model.ProductId, _userManager, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("Product/Rate")]
+        public async Task<IActionResult> ProductRate(UserProductRatePostRequestcs model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de puntuar inválida");
+                }
+
+                return Ok(await _userService.RateProductAsync(model, _userManager, _apiDbContext));
             }
             catch (Exception e)
             {

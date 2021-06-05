@@ -249,6 +249,89 @@ namespace APIEntraApp.Services.Users
             }
         }
 
+        public async Task<int> AddProductFavoritesAsync(int userId, int productId, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                {
+                    throw new Exception($"Usuario con id {userId} no encontrado");
+                }
+
+                Product product = await apiDbContext.Products.FindAsync(productId);
+                if (product == null)
+                {
+                    throw new Exception($"Producto con id {productId} no encontrado");
+                }
+
+                if (apiDbContext.Users_Products_Favorites.FirstOrDefault(f => f.UserId == userId && f.ProductId == productId) != null)
+                {
+                    throw new Exception($"El producto {product.Name} ya se encuentra en el listado de favoritos de {user.UserName}");
+                }
+
+                await apiDbContext.Users_Products_Favorites.AddAsync(new User_Product_Favorite
+                {
+                    UserId = userId,
+                    ProductId = productId
+                });
+
+                await apiDbContext.SaveChangesAsync();
+
+                return productId;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<int> RateProductAsync(UserProductRatePostRequestcs model, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(model.UserId.ToString());
+                if (user == null)
+                {
+                    throw new Exception($"Usuario con id {model.UserId} no encontrado");
+                }
+
+                Product product = await apiDbContext.Products.FindAsync(model.Productd);
+                if (product == null)
+                {
+                    throw new Exception($"Producto con id {model.Productd} no encontrado");
+                }
+
+                User_Product_Rating userRate = await apiDbContext.Users_Products_Ratings.FindAsync(new { model.UserId, model.Productd });
+
+                if (userRate == null)
+                {
+                    await apiDbContext.Users_Products_Ratings.AddAsync(new User_Product_Rating
+                    {
+                        Rate = model.Rate,
+                        Date = DateTime.Now,
+                        Comment = model.Comment,
+                        UserId = model.UserId,
+                        ProductId = model.Productd
+                    });
+                }
+                else
+                {
+                    userRate.Rate = model.Rate;
+                    userRate.Date = DateTime.Now;
+                    userRate.Comment = model.Comment;
+                }
+
+                await apiDbContext.SaveChangesAsync();
+
+                return model.Productd;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager)
         {
             try
