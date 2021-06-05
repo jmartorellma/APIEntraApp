@@ -6,10 +6,12 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
+using APIEntraApp.Data;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Users.Core;
 using APIEntraApp.Services.Users.Models.DTOs;
 using APIEntraApp.Services.Users.Models.Request;
+using APIEntraApp.Data.Models;
 
 namespace APIEntraApp.Services.Users
 {
@@ -46,12 +48,6 @@ namespace APIEntraApp.Services.Users
                 if (user == null) 
                 {
                     throw new Exception($"Usuario con id {id} no encontrado");
-                }
-
-                IList<string> roleList = await userManager.GetRolesAsync(user);
-                if (roleList == null || !roleList.Any()) 
-                {
-                    throw new Exception($"Rol del usuario {user.UserName} no encontrado");
                 }
 
                 return await ModelToDTOAsync(user, userManager);
@@ -170,6 +166,43 @@ namespace APIEntraApp.Services.Users
             }
         }
 
+        public async Task<int> AddShopFavoritesAsync(int userId, int shopId, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext) 
+        { 
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(userId.ToString());
+                if (user == null) 
+                {
+                    throw new Exception($"Usuario con id {userId} no encontrado");
+                }
+
+                Shop shop = await apiDbContext.Shops.FindAsync(shopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {shopId} no encontrada");
+                }
+
+                if (apiDbContext.Users_Shops_Favorites.FirstOrDefault(f => f.UserId == userId && f.ShopId == shopId) != null) 
+                {
+                    throw new Exception($"La tienda {shop.Name} ya se encuentra en el listado de favoritos de {user.UserName}");
+                }
+
+                await apiDbContext.Users_Shops_Favorites.AddAsync(new User_Shop_Favorite 
+                { 
+                    UserId = userId,
+                    ShopId =  shopId
+                });
+
+                await apiDbContext.SaveChangesAsync();
+
+                return shopId;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager)
         {
             try
@@ -240,6 +273,40 @@ namespace APIEntraApp.Services.Users
                 }
 
                 return user.Id;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<int> RemoveShopFavoritesAsync(int userId, int shopId, UserManager<ApplicationUser> userManager, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                {
+                    throw new Exception($"Usuario con id {userId} no encontrado");
+                }
+
+                Shop shop = await apiDbContext.Shops.FindAsync(shopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {shopId} no encontrada");
+                }
+
+                User_Shop_Favorite userSopFavorite = apiDbContext.Users_Shops_Favorites.FirstOrDefault(f => f.UserId == userId && f.ShopId == shopId);
+                if (userSopFavorite == null)
+                {
+                    throw new Exception($"La tienda {shop.Name} no se encuentra en el listado de favoritos de {user.UserName}");
+                }
+
+                apiDbContext.Users_Shops_Favorites.Remove(userSopFavorite);
+
+                await apiDbContext.SaveChangesAsync();
+
+                return shopId;
             }
             catch (Exception e)
             {

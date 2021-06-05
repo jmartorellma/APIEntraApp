@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
+using APIEntraApp.Data;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Users.Core;
 using APIEntraApp.Services.Users.Models.Request;
@@ -20,15 +21,18 @@ namespace APIEntraApp.Controllers
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApiDbContext _apiDbContext;
 
         public UsersController(
             IConfiguration configuration,
             IUserService userService,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager, 
+            ApiDbContext apiDbContext)
         {
             _configuration = configuration;
             _userManager = userManager;
             _userService = userService;
+            _apiDbContext = apiDbContext;
         }
 
         [HttpGet]
@@ -88,6 +92,24 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpPost("Favorites")]
+        public async Task<IActionResult> Addfavorites(UserAddFavoritesPostRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de alta inválida");
+                }
+
+                return Ok(await _userService.AddShopFavoritesAsync(model.UserId, model.ShopId, _userManager, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost("Picture")]
         public async Task<IActionResult> UpdatePicture(UserPicturePostRequest model)
         {
@@ -139,6 +161,24 @@ namespace APIEntraApp.Controllers
         [HttpDelete("{id}")]
         [Authorize(Roles = "SuperUser,Admin")]
         public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de eliminar inválida");
+                }
+
+                return Ok(await _userService.DeleteAsync(id, _userManager));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("Favorites")]
+        public async Task<IActionResult> RemoveFavorites(int id)
         {
             try
             {
