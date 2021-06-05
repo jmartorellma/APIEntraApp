@@ -199,6 +199,32 @@ namespace APIEntraApp.Services.Shops
             }
         }
 
+        public async Task<int> AddUserLockedAsync(int shopId, int userId, ApiDbContext apiDbContext) 
+        {
+            try
+            {
+                User_Shop_Locked userShopLocked = await apiDbContext.Users_Shops_Locked.FindAsync(new { userId, shopId });
+                if (userShopLocked != null) 
+                {
+                    throw new Exception($"El usuario con id {userId} ya se encuenta bloqueado para la tienda con id {shopId}");
+                }
+
+                await apiDbContext.Users_Shops_Locked.AddAsync(new User_Shop_Locked 
+                { 
+                    UserId = userId,
+                    ShopId = shopId
+                });
+
+                await apiDbContext.SaveChangesAsync();
+
+                return userId;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<ShopDTO> UpdateAsync(ShopPutRequest model, ApiDbContext apiDbContext)
         {
             try
@@ -318,6 +344,28 @@ namespace APIEntraApp.Services.Shops
                 await apiDbContext.SaveChangesAsync();
 
                 return purchaseType.Code;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<int> RemoveUserLockedAsync(int shopId, int userId, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                User_Shop_Locked userShopLocked = await apiDbContext.Users_Shops_Locked.FindAsync(new { userId, shopId });
+                if (userShopLocked == null)
+                {
+                    throw new Exception($"El usuario con id {userId} no se encuenta bloqueado para la tienda con id {shopId}");
+                }
+
+                apiDbContext.Users_Shops_Locked.Remove(userShopLocked);
+
+                await apiDbContext.SaveChangesAsync();
+
+                return userId;
             }
             catch (Exception e)
             {

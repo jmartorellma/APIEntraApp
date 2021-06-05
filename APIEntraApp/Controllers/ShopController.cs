@@ -155,6 +155,25 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpPost("User/Locked")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> AddUserLocked(ShopUserLockedPostRequest model) 
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de bloquear inválida");
+                }
+
+                return Ok(await _shopService.AddUserLockedAsync(model.ShopId, model.UserId, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPut]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Update(ShopPutRequest model)
@@ -224,6 +243,25 @@ namespace APIEntraApp.Controllers
                 }
 
                 return Ok(await _shopService.RemovePurchaseTypeAsync(model, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("User/Locked")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> RemoveUserLocked(ShopUserLockedDeleteRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de desbloquear inválida");
+                }
+
+                return Ok(await _shopService.RemoveUserLockedAsync(model.ShopId, model.UserId, _apiDbContext));
             }
             catch (Exception e)
             {
