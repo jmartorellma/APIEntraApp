@@ -118,7 +118,23 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpPut("Complete")]
+        public async Task<IActionResult> Complete(PurchasePutRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de actualización inválida");
+                }
 
+                return Ok(await _purchaseService.CompleteAsync(model, _apiDbContext, _configuration));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

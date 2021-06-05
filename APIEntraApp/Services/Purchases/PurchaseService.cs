@@ -232,6 +232,40 @@ namespace APIEntraApp.Services.Purchases
             }
         }
 
+        public async Task<PurchaseDTO> CompleteAsync(PurchasePutRequest model, ApiDbContext apiDbContext, IConfiguration configuration)
+        {
+            try
+            {
+                Purchase purchase = await apiDbContext.Purchases.FindAsync(model.Id);
+                if (purchase == null)
+                {
+                    throw new Exception($"No existe la compra con id {model.Id}");
+                }
+
+                if (purchase.PaymentStatus.Code.ToUpper().Trim().Equals(configuration["PaymentStatusFinishedCode"].ToString().ToUpper().Trim()))
+                {
+                    throw new Exception($"La compra no se puede modificar. Ya está completada.");
+                }
+
+                // TODO - Aquí habría que implmentar la lógica de pago con TPV si la tienda permite el pago ONLINE
+
+                purchase.Purchase_Carts.ForEach(pc => 
+                {
+                    pc.UserProductCart.IsCompleted = true;
+                });
+
+                await apiDbContext.SaveChangesAsync();
+
+                await SendMail(purchase.Purchase_Carts.Select(s => s.UserProductCart).ToList());
+
+                return ModelToDTO(purchase);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<int> DeleteAsync(int id, ApiDbContext apiDbContext, IConfiguration configuration) 
         {
             try
@@ -300,6 +334,11 @@ namespace APIEntraApp.Services.Purchases
                PurchaseType = purchase.PurchaseType.Name,
                PaymentStatus = purchase.PaymentStatus.Name
             };
+        }
+
+        private async Task SendMail(List<User_Product_Cart> productCartList) 
+        { 
+            // TODO - Enviar correo de resumen de compra al usuario
         }
 
         #endregion Support Methods
