@@ -6,6 +6,7 @@
         public string  ProductPicture { get; set; }
         public string  ProductName    { get; set; }
         public string  ShopName       { get; set; }
+        public int     ShopId         { get; set; }
         public int     Quantity       { get; set; }
         public decimal ProductPvp     { get; set; }
     }

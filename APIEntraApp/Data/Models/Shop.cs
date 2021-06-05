@@ -8,25 +8,29 @@ namespace APIEntraApp.Data.Models
     public class Shop
     {
         [Key]
-        public int      Id           { get; set; }
+        public int      Id             { get; set; }
+        [Required]                     
+        public string   Nif            { get; set; }
+        [Required]                     
+        public bool     IsActive       { get; set; }
+        [Required]                     
+        public string   Code           { get; set; }
+        [Required]                     
+        public string   Name           { get; set; }
+        [Required]                     
+        public string   Phone          { get; set; }
+        [Required]                     
+        public string   Email          { get; set; }
+        [Required]                     
+        public decimal  Taxes          { get; set; }
         [Required]
-        public string   Nif          { get; set; }
+        public decimal  MinAmountTaxes { get; set; }
         [Required]
-        public bool     IsActive     { get; set; }
-        [Required]
-        public string   Code         { get; set; }
-        [Required]
-        public string   Name         { get; set; }
-        [Required]
-        public string   Phone        { get; set; }
-        [Required]
-        public string   Email        { get; set; }
-        [Required]
-        public string   Address      { get; set; }
-        [Required]
-        public string   City         { get; set; }
-        public string   Picture      { get; set; }
-        public string   Web          { get; set; }
+        public string   Address        { get; set; }
+        [Required]                     
+        public string   City           { get; set; }
+        public string   Picture        { get; set; }
+        public string   Web            { get; set; }
         [Required]
         public DateTime CreationDate { get; set; }
 

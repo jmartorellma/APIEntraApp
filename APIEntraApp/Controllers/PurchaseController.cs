@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using APIEntraApp.Data;
 using APIEntraApp.Services.Purchases.Core;
+using APIEntraApp.Services.Purchases.Models.Request;
+using Microsoft.Extensions.Configuration;
 
 namespace APIEntraApp.Controllers
 {
@@ -12,13 +14,16 @@ namespace APIEntraApp.Controllers
     [Route("/Purchase")]
     public class PurchaseController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly IPurchaseService _purchaseService;
         private readonly ApiDbContext _apiDbContext;
 
         public PurchaseController(
+            IConfiguration configuration,
             ApiDbContext apiDbContext,
             IPurchaseService purchaseService)
         {
+            _configuration = configuration;
             _apiDbContext = apiDbContext;
             _purchaseService = purchaseService;
         }
@@ -87,7 +92,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de alta inválida");
                 }
 
-                return Ok(await _purchaseService.CreateAsync(model, _apiDbContext));
+                return Ok(await _purchaseService.CreateAsync(model, _apiDbContext, _configuration));
             }
             catch (Exception e)
             {

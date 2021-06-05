@@ -21,7 +21,8 @@
     <Folder Include="Resources\Images\Users\" />
     <Folder Include="Resources\Images\Shops\" />
     <Folder Include="Resources\Images\Products\" />
-    <Folder Include="Services\Deliveries\" />
+    <Folder Include="Services\Deliveries\Models\DTOs\" />
+    <Folder Include="Services\Deliveries\Core\" />
   </ItemGroup>
 
 </Project>

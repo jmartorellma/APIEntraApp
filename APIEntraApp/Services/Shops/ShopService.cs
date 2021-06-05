@@ -81,6 +81,8 @@ namespace APIEntraApp.Services.Shops
                     Name = model.Name,
                     Phone = model.Phone,
                     Email = model.Email,
+                    Taxes = model.Taxes,
+                    MinAmountTaxes = model.MinAmountTaxes,
                     Address = model.Address,
                     City = model.City,
                     Picture = model.Picture,
@@ -258,6 +260,8 @@ namespace APIEntraApp.Services.Shops
                 shop.Name = model.Name;
                 shop.Phone = model.Phone;
                 shop.Email = model.Email;
+                shop.Taxes = model.Taxes;
+                shop.MinAmountTaxes = model.MinAmountTaxes;
                 shop.Address = model.Address;
                 shop.City = model.City;
                 shop.Picture = model.Picture;
@@ -392,6 +396,8 @@ namespace APIEntraApp.Services.Shops
                 Name = shop.Name,
                 Phone = shop.Phone,
                 Email = shop.Email,
+                Taxes = shop.Taxes,
+                MinAmountTaxes = shop.MinAmountTaxes,
                 Address = shop.Address,
                 City = shop.City,
                 Picture = shop.Picture,

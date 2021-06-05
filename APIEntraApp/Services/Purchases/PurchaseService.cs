@@ -6,6 +6,8 @@ using APIEntraApp.Data;
 using APIEntraApp.Data.Models;
 using APIEntraApp.Services.Purchases.Core;
 using APIEntraApp.Services.Purchases.Models.DTOs;
+using APIEntraApp.Services.Purchases.Models.Request;
+using Microsoft.Extensions.Configuration;
 
 namespace APIEntraApp.Services.Purchases
 {
@@ -73,9 +75,152 @@ namespace APIEntraApp.Services.Purchases
             }
         }
 
+        public async Task<PurchaseDTO> CreateAsync(PurchasePostRequest model, ApiDbContext apiDbContext, IConfiguration configuration)
+        {
+            try
+            {
+                Purchase newPurchase = new Purchase
+                {
+                    StatusDate = DateTime.Now,
+                    CreationDate = DateTime.Now,
+                    PaymentMethodId = model.PaymentMethoId,
+                    PurchaseTypeId = model.PurchaseTypeId,
+                    PaymentStatusId = model.PaymentStatusId
+                };
+
+                decimal amount = 0;
+
+                // Todos los productos deben pertenecer a la misma tienda - Se crea un purchase por tienda en el carro
+                model.ProductCartIdList.ForEach(id =>
+                {
+                    decimal am = apiDbContext.Users_Products_Cart.Where(pc => pc.Id == id).First().Product.Pvp;
+                    amount += am;
+
+                    newPurchase.Purchase_Carts.Add(new Purchase_Cart
+                    {
+                        Purchase = newPurchase,
+                        UserProductCartId = id
+                    });
+                });
+
+                newPurchase.Amount = amount;
+
+                await apiDbContext.Purchases.AddAsync(newPurchase);
+
+                await apiDbContext.SaveChangesAsync();
+
+                PurchaseType type = await apiDbContext.PurchaseTypes.FindAsync(newPurchase.PurchaseTypeId);
+
+                if (type != null && type.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim()) && model.DeliveryData != null) 
+                {
+                    Shop shop = apiDbContext.Users_Products_Cart.Where(pc => model.ProductCartIdList.Contains(pc.Id)).ToList().First().Product.Shop;
+
+                    Delivery newDelivery = new Delivery
+                    {
+                        PurchaseId = newPurchase.PurchaseTypeId,
+                        DeliveryDate = DateTime.Now.AddDays(5),
+                        DeliveryTaxes = amount < shop.MinAmountTaxes ? shop.Taxes : 0,
+                        Adderess = model.DeliveryData.Address,
+                        Number = model.DeliveryData.Number,
+                        City = model.DeliveryData.City,
+                        PostCode = model.DeliveryData.PostCode,
+                        Region = model.DeliveryData.Region,
+                        CreationDate = DateTime.Now
+                    };
+
+                    await apiDbContext.SaveChangesAsync();
+                }
+
+                return ModelToDTO(newPurchase);
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<PurchaseDTO> UpdateAsync(PurchasePutRequest model, ApiDbContext apiDbContext, IConfiguration configuration)
+        {
+            try
+            {
+                Purchase purchase = await apiDbContext.Purchases.FindAsync(model.Id);
+                if (purchase == null)
+                {
+                    throw new Exception($"No existe la compra con id {model.Id}");
+                }
+
+                purchase.Purchase_Carts.RemoveAll(pc => !model.ProductCartIdList.Contains(pc.UserProductCartId));
+                model.ProductCartIdList.Where(mp => !purchase.Purchase_Carts.Select(s => s.PurchaseId).ToList().Contains(mp)).ToList().ForEach(pId =>
+                {
+                    purchase.Purchase_Carts.Add(new Purchase_Cart
+                    {
+                        PurchaseId = model.Id,
+                        UserProductCartId = pId
+                    });
+                });
 
 
+                Purchase newPurchase = new Purchase
+                {
+                    StatusDate = DateTime.Now,
+                    CreationDate = DateTime.Now,
+                    PaymentMethodId = model.PaymentMethoId,
+                    PurchaseTypeId = model.PurchaseTypeId,
+                    PaymentStatusId = model.PaymentStatusId
+                };
 
+                decimal amount = 0;
+
+                // Todos los productos deben pertenecer a la misma tienda - Se crea un purchase por tienda en el carro
+                model.ProductCartIdList.ForEach(id =>
+                {
+                    decimal am = apiDbContext.Users_Products_Cart.Where(pc => pc.Id == id).First().Product.Pvp;
+                    amount += am;
+
+                    newPurchase.Purchase_Carts.Add(new Purchase_Cart
+                    {
+                        Purchase = newPurchase,
+                        UserProductCartId = id
+                    });
+                });
+
+                newPurchase.Amount = amount;
+
+                await apiDbContext.Purchases.AddAsync(newPurchase);
+
+                await apiDbContext.SaveChangesAsync();
+
+                PurchaseType type = await apiDbContext.PurchaseTypes.FindAsync(newPurchase.PurchaseTypeId);
+
+                if (type != null && type.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim()) && model.DeliveryData != null)
+                {
+                    Shop shop = apiDbContext.Users_Products_Cart.Where(pc => model.ProductCartIdList.Contains(pc.Id)).ToList().First().Product.Shop;
+
+                    Delivery newDelivery = new Delivery
+                    {
+                        PurchaseId = newPurchase.PurchaseTypeId,
+                        DeliveryDate = DateTime.Now.AddDays(5),
+                        DeliveryTaxes = amount < shop.MinAmountTaxes ? shop.Taxes : 0,
+                        Adderess = model.DeliveryData.Address,
+                        Number = model.DeliveryData.Number,
+                        City = model.DeliveryData.City,
+                        PostCode = model.DeliveryData.PostCode,
+                        Region = model.DeliveryData.Region,
+                        CreationDate = DateTime.Now
+                    };
+
+                    await apiDbContext.SaveChangesAsync();
+                }
+
+                return ModelToDTO(newPurchase);
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
 
         #region Support Methods
 

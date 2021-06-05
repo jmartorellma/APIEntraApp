@@ -46,6 +46,12 @@ namespace APIEntraApp.Data
                 .HasForeignKey(si => si.ToId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Shop>()
+               .Property(s => s.Taxes).HasPrecision(18, 2);
+
+            builder.Entity<Shop>()
+               .Property(s => s.MinAmountTaxes).HasPrecision(18, 2);
+
             builder.Entity<User_Shop_Favorite>()
                 .HasKey(k => new { k.UserId, k.ShopId });
 
