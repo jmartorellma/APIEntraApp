@@ -9,10 +9,12 @@ namespace APIEntraApp.Data.Models
     public class User_Product_Cart
     {
         [Key]
-        public int      Id           { get; set; }
-        [Required]                   
-        public bool     IsCompleted  { get; set; }
-        public DateTime CompleteDate { get; set; }
+        public int       Id           { get; set; }
+        [Required]       
+        public int       Quantity     { get; set; }
+        [Required]                    
+        public bool      IsCompleted  { get; set; }
+        public DateTime? CompleteDate { get; set; }
 
         // Navigation properties
         public int UserId { get; set; }
