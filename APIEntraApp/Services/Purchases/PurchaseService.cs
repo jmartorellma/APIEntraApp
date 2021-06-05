@@ -118,11 +118,12 @@ namespace APIEntraApp.Services.Purchases
                         PurchaseId = newPurchase.PurchaseTypeId,
                         DeliveryDate = DateTime.Now.AddDays(5),
                         DeliveryTaxes = amount < shop.MinAmountTaxes ? shop.Taxes : 0,
-                        Adderess = model.DeliveryData.Address,
+                        Address = model.DeliveryData.Address,
                         Number = model.DeliveryData.Number,
                         City = model.DeliveryData.City,
                         PostCode = model.DeliveryData.PostCode,
                         Region = model.DeliveryData.Region,
+                        IsCompleted = false,
                         CreationDate = DateTime.Now
                     };
 
@@ -208,11 +209,12 @@ namespace APIEntraApp.Services.Purchases
                         PurchaseId = purchase.PurchaseTypeId,
                         DeliveryDate = DateTime.Now.AddDays(5),
                         DeliveryTaxes = amount < shop.MinAmountTaxes ? shop.Taxes : 0,
-                        Adderess = model.DeliveryData.Address,
+                        Address = model.DeliveryData.Address,
                         Number = model.DeliveryData.Number,
                         City = model.DeliveryData.City,
                         PostCode = model.DeliveryData.PostCode,
                         Region = model.DeliveryData.Region,
+                        IsCompleted = false,
                         CreationDate = DateTime.Now
                     };
 

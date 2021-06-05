@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace APIEntraApp.Data.Models
@@ -12,7 +11,7 @@ namespace APIEntraApp.Data.Models
         public DateTime DeliveryDate  { get; set; }
         public decimal? DeliveryTaxes { get; set; }
         [Required]
-        public string   Adderess      { get; set; }
+        public string   Address       { get; set; }
         [Required]                    
         public string   Number        { get; set; }
         [Required]                    
@@ -21,6 +20,8 @@ namespace APIEntraApp.Data.Models
         public string   PostCode      { get; set; }
         [Required]                    
         public string   Region        { get; set; }
+        [Required]
+        public bool     IsCompleted   { get; set; }
         [Required]
         public DateTime CreationDate  { get; set; }
 
