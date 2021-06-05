@@ -64,9 +64,7 @@ namespace APIEntraApp.Services.PaymentMethods
 
                 await apiDbContext.SaveChangesAsync();
 
-                PaymentMethod createdPaymentMethod = apiDbContext.PaymentMethods.First(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return ModelToDTO(createdPaymentMethod);
+                return ModelToDTO(newPaymentMethod);
             }
             catch (Exception e)
             {

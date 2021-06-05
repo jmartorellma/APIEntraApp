@@ -63,9 +63,7 @@ namespace APIEntraApp.Services.PaymentStatuses
 
                 await apiDbContext.SaveChangesAsync();
 
-                PaymentStatus createdPaymentStatus = apiDbContext.PaymentStatus.First(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return ModelToDTO(createdPaymentStatus);
+                return ModelToDTO(newPaymentStatus);
             }
             catch (Exception e)
             {

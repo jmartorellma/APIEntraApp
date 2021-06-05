@@ -110,13 +110,15 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de actualización inválida");
                 }
 
-                return Ok(await _purchaseService.UpdateAsync(model, _apiDbContext));
+                return Ok(await _purchaseService.UpdateAsync(model, _apiDbContext, _configuration));
             }
             catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
         }
+
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -128,7 +130,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de eliminar inválida");
                 }
 
-                return Ok(await _purchaseService.DeleteAsync(id, _apiDbContext));
+                return Ok(await _purchaseService.DeleteAsync(id, _apiDbContext, _configuration));
             }
             catch (Exception e)
             {

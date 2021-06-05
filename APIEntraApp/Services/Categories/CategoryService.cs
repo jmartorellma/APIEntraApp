@@ -62,9 +62,7 @@ namespace APIEntraApp.Services.Categories
 
                 await apiDbContext.SaveChangesAsync();
 
-                Category createdCategory = apiDbContext.Categories.First(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return ModelToDTO(createdCategory);
+                return ModelToDTO(newCategory);
             }
             catch (Exception e)
             {

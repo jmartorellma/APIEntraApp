@@ -109,9 +109,7 @@ namespace APIEntraApp.Services.Purchases
 
                 await apiDbContext.SaveChangesAsync();
 
-                PurchaseType type = await apiDbContext.PurchaseTypes.FindAsync(newPurchase.PurchaseTypeId);
-
-                if (type != null && type.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim()) && model.DeliveryData != null) 
+                if (newPurchase.PurchaseType.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim()) && model.DeliveryData != null) 
                 {
                     Shop shop = apiDbContext.Users_Products_Cart.Where(pc => model.ProductCartIdList.Contains(pc.Id)).ToList().First().Product.Shop;
 
@@ -127,6 +125,8 @@ namespace APIEntraApp.Services.Purchases
                         Region = model.DeliveryData.Region,
                         CreationDate = DateTime.Now
                     };
+
+                    apiDbContext.Deliveries.Add(newDelivery);
 
                     await apiDbContext.SaveChangesAsync();
                 }
@@ -150,6 +150,11 @@ namespace APIEntraApp.Services.Purchases
                     throw new Exception($"No existe la compra con id {model.Id}");
                 }
 
+                if (purchase.PaymentStatus.Code.ToUpper().Trim().Equals(configuration["PaymentStatusFinishedCode"].ToString().ToUpper().Trim())) 
+                {
+                    throw new Exception($"La compra no se puede modificar. Ya está completada.");
+                }
+
                 purchase.Purchase_Carts.RemoveAll(pc => !model.ProductCartIdList.Contains(pc.UserProductCartId));
                 model.ProductCartIdList.Where(mp => !purchase.Purchase_Carts.Select(s => s.PurchaseId).ToList().Contains(mp)).ToList().ForEach(pId =>
                 {
@@ -160,16 +165,6 @@ namespace APIEntraApp.Services.Purchases
                     });
                 });
 
-
-                Purchase newPurchase = new Purchase
-                {
-                    StatusDate = DateTime.Now,
-                    CreationDate = DateTime.Now,
-                    PaymentMethodId = model.PaymentMethoId,
-                    PurchaseTypeId = model.PurchaseTypeId,
-                    PaymentStatusId = model.PaymentStatusId
-                };
-
                 decimal amount = 0;
 
                 // Todos los productos deben pertenecer a la misma tienda - Se crea un purchase por tienda en el carro
@@ -177,29 +172,40 @@ namespace APIEntraApp.Services.Purchases
                 {
                     decimal am = apiDbContext.Users_Products_Cart.Where(pc => pc.Id == id).First().Product.Pvp;
                     amount += am;
-
-                    newPurchase.Purchase_Carts.Add(new Purchase_Cart
-                    {
-                        Purchase = newPurchase,
-                        UserProductCartId = id
-                    });
                 });
 
-                newPurchase.Amount = amount;
+                purchase.Amount = amount;
 
-                await apiDbContext.Purchases.AddAsync(newPurchase);
+                if (purchase.PaymentStatusId != model.PaymentStatusId)
+                {
+                    purchase.StatusDate = DateTime.Now;
+                }
+           
+                if (purchase.PurchaseTypeId != model.PurchaseTypeId) 
+                {
+                    if (purchase.PurchaseType.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim())) 
+                    {
+                        Delivery delivery = apiDbContext.Deliveries.FirstOrDefault(d => d.PurchaseId == purchase.Id);
+                        if (delivery != null) 
+                        {
+                            apiDbContext.Deliveries.Remove(delivery);
+                        }                        
+                    }
+                }
+
+                purchase.PaymentMethodId = model.PaymentMethodId;
+                purchase.PurchaseTypeId = model.PurchaseTypeId;
+                purchase.PaymentStatusId = model.PaymentStatusId;
 
                 await apiDbContext.SaveChangesAsync();
 
-                PurchaseType type = await apiDbContext.PurchaseTypes.FindAsync(newPurchase.PurchaseTypeId);
-
-                if (type != null && type.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim()) && model.DeliveryData != null)
+                if (purchase.PurchaseType.Code.ToUpper().Trim().Equals(configuration["OnlinePurchasTypeCode"].ToString().ToUpper().Trim()) && model.DeliveryData != null)
                 {
                     Shop shop = apiDbContext.Users_Products_Cart.Where(pc => model.ProductCartIdList.Contains(pc.Id)).ToList().First().Product.Shop;
 
                     Delivery newDelivery = new Delivery
                     {
-                        PurchaseId = newPurchase.PurchaseTypeId,
+                        PurchaseId = purchase.PurchaseTypeId,
                         DeliveryDate = DateTime.Now.AddDays(5),
                         DeliveryTaxes = amount < shop.MinAmountTaxes ? shop.Taxes : 0,
                         Adderess = model.DeliveryData.Address,
@@ -210,11 +216,46 @@ namespace APIEntraApp.Services.Purchases
                         CreationDate = DateTime.Now
                     };
 
+                    apiDbContext.Deliveries.Add(newDelivery);
+
                     await apiDbContext.SaveChangesAsync();
                 }
 
-                return ModelToDTO(newPurchase);
+                return ModelToDTO(purchase);
 
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<int> DeleteAsync(int id, ApiDbContext apiDbContext, IConfiguration configuration) 
+        {
+            try
+            {
+                var purchase = await apiDbContext.Purchases.FindAsync(id);
+                if (purchase == null)
+                {
+                    throw new Exception($"Compra con id {id} no encontrada");
+                }
+
+                if (purchase.PaymentStatus.Code.ToUpper().Trim().Equals(configuration["PaymentStatusFinishedCode"].ToString().ToUpper().Trim()))
+                {
+                    throw new Exception($"La compra no se puede eliminar. Ya está completada.");
+                }
+
+                apiDbContext.Purchases.Remove(purchase);
+
+                Delivery delivery = apiDbContext.Deliveries.FirstOrDefault(d => d.PurchaseId == purchase.Id);
+                if (delivery != null)
+                {
+                    apiDbContext.Deliveries.Remove(delivery);
+                }
+
+                await apiDbContext.SaveChangesAsync();
+
+                return purchase.Id;
             }
             catch (Exception e)
             {

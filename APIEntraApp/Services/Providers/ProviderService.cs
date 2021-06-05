@@ -67,9 +67,7 @@ namespace APIEntraApp.Services.Providers
 
                 await apiDbContext.SaveChangesAsync();
 
-                Provider createdProvider = apiDbContext.Providers.First(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return ModelToDTO(createdProvider);
+                return ModelToDTO(newProvider);
             }
             catch (Exception e)
             {

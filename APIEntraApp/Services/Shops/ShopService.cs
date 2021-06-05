@@ -94,9 +94,7 @@ namespace APIEntraApp.Services.Shops
                 await apiDbContext.Shops.AddAsync(shop);
                 await apiDbContext.SaveChangesAsync();
 
-                Shop createdShop = apiDbContext.Shops.First(s => s.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return await ModelToDTOAsync(createdShop, apiDbContext);
+                return await ModelToDTOAsync(shop, apiDbContext);
             }
             catch (Exception e)
             {

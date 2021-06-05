@@ -63,9 +63,7 @@ namespace APIEntraApp.Services.PurchaseTypes
 
                 await apiDbContext.SaveChangesAsync();
 
-                PurchaseType createdPurchaseType = apiDbContext.PurchaseTypes.First(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return ModelToDTO(createdPurchaseType);
+                return ModelToDTO(newPurchaseType);
             }
             catch (Exception e)
             {

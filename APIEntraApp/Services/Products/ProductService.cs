@@ -89,9 +89,7 @@ namespace APIEntraApp.Services.Products
                 
                 await apiDbContext.SaveChangesAsync();
 
-                Product createdProduct = apiDbContext.Products.First(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-
-                return ModelToDTO(createdProduct);
+                return ModelToDTO(newProduct);
             }
             catch (Exception e)
             {
