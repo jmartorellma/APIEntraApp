@@ -141,6 +141,7 @@ namespace APIEntraApp.Services.Carts
                 {
                     Id = cartLine.Id,
                     ProductName = cartLine.Product.Name,
+                    ShopName = cartLine.Product.Shop.Name,
                     ProductPicture = cartLine.Product.Picture,
                     Quantity = cartLine.Quantity,
                     ProductPvp = cartLine.Product.Pvp * cartLine.Quantity
