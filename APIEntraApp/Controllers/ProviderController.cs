@@ -3,36 +3,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
-using APIEntraApp.Data.Identity;
-using APIEntraApp.Services.Users.Core;
-using APIEntraApp.Services.Users.Models.Request;
+using APIEntraApp.Data;
+using APIEntraApp.Services.Providers.Core;
+using APIEntraApp.Services.Providers.Models.Request;
 
 namespace APIEntraApp.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("/Users")]
-    public class UsersController : ControllerBase
+    [Route("/Provider")]
+    public class ProviderController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly IUserService _userService;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IProviderService _providerService;
+        private readonly ApiDbContext _apiDbContext;
 
-        public UsersController(
+        public ProviderController(
             IConfiguration configuration,
-            IUserService userService,
-            UserManager<ApplicationUser> userManager)
+            IProviderService providerService,
+            ApiDbContext apiDbContext)
         {
             _configuration = configuration;
-            _userManager = userManager;
-            _userService = userService;
+            _providerService = providerService;
+            _apiDbContext = apiDbContext;
         }
 
         [HttpGet]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -42,7 +41,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición inválida");
                 }
 
-                return Ok(await _userService.GetAllAsync(_userManager));
+                return Ok(await _providerService.GetAllAsync(_apiDbContext));
             }
             catch (Exception e)
             {
@@ -51,7 +50,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -61,7 +60,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición inválida");
                 }
 
-                return Ok(await _userService.GetByIdAsync(id, _userManager));
+                return Ok(await _providerService.GetByIdAsync(id, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -70,8 +69,8 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "SuperUser,Admin")]
-        public async Task<IActionResult> Create(UserPostRequest model)
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> Create(ProviderPostRequest model)
         {
             try
             {
@@ -80,7 +79,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de alta inválida");
                 }
 
-                return Ok(await _userService.CreateAsync(model, _userManager));
+                return Ok(await _providerService.CreateAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -89,7 +88,8 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost("Picture")]
-        public async Task<IActionResult> UpdatePicture(UserPicturePostRequest model)
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> UpdatePicture(ProviderPicturePostRequest model)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("No se ha encontrado la imagen en la llamada");
                 }
 
-                return Ok(await _userService.UpdatePictureAsync(file, model.UserId, _configuration, _userManager));
+                return Ok(await _providerService.UpdatePictureAsync(file, model.ProviderId, _configuration, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -119,7 +119,8 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(UserPutRequest model)
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> Update(ProviderPutRequest model)
         {
             try
             {
@@ -128,7 +129,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de actualización inválida");
                 }
 
-                return Ok(await _userService.UpdateAsync(model, _userManager));
+                return Ok(await _providerService.UpdateAsync(model, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -137,7 +138,7 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "SuperUser,Admin")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -147,7 +148,7 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de eliminar inválida");
                 }
 
-                return Ok(await _userService.DeleteAsync(id, _userManager));
+                return Ok(await _providerService.DeleteAsync(id, _apiDbContext));
             }
             catch (Exception e)
             {
@@ -155,5 +156,4 @@ namespace APIEntraApp.Controllers
             }
         }
     }
-
 }

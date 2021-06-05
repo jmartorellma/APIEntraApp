@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using APIEntraApp.Data;
 using APIEntraApp.Data.Models;
 using APIEntraApp.Data.Identity;
@@ -99,6 +102,47 @@ namespace APIEntraApp.Services.Shops
             }
         }
 
+        public async Task<string> UpdatePictureAsync(IFormFile file, int shopId, IConfiguration configuration, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                Shop shop = await apiDbContext.Shops.FindAsync(shopId);
+                if (shop == null)
+                {
+                    throw new Exception($"No se ha encontrado el proveedor con id {shopId}");
+                }
+
+                string folderName = Path.Combine(configuration["ResourcesFolder"].ToString(),
+                                                 configuration["ImagesFolder"].ToString(),
+                                                 configuration["ShopsFolder"].ToString());
+
+                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                string fileName = shop.Code;
+
+                string fullPath = Path.Combine(pathToSave, fileName);
+                string dbPath = Path.Combine(folderName, fileName);
+
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+
+                FileStream stream = new FileStream(fullPath, FileMode.Create);
+                await file.CopyToAsync(stream);
+                await stream.DisposeAsync();
+
+                shop.Picture = dbPath;
+                await apiDbContext.SaveChangesAsync();
+
+                return dbPath;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        
         public async Task<string> AddPaymentethodAsync(ShopPaymentMethodPostRequest model, ApiDbContext apiDbContext) 
         {
             try

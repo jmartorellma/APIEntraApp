@@ -99,6 +99,47 @@ namespace APIEntraApp.Services.Products
             }
         }
 
+        public async Task<string> UpdatePictureAsync(IFormFile file, int productID, IConfiguration configuration, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                Product product = await apiDbContext.Products.FindAsync(productID);
+                if (product == null)
+                {
+                    throw new Exception($"No se ha encontrado el producto con id {productID}");
+                }
+
+                string folderName = Path.Combine(configuration["ResourcesFolder"].ToString(),
+                                                 configuration["ImagesFolder"].ToString(),
+                                                 configuration["ProductsFolder"].ToString());
+
+                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                string fileName = string.Join("-", product.Shop.Code, product.Code);
+
+                string fullPath = Path.Combine(pathToSave, fileName);
+                string dbPath = Path.Combine(folderName, fileName);
+
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+
+                FileStream stream = new FileStream(fullPath, FileMode.Create);
+                await file.CopyToAsync(stream);
+                await stream.DisposeAsync();
+
+                product.Picture = dbPath;
+                await apiDbContext.SaveChangesAsync();
+
+                return dbPath;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<ProductDTO> UpdateAsync(ProductPutRequest model, ApiDbContext apiDbContext)
         {
             try
@@ -142,47 +183,6 @@ namespace APIEntraApp.Services.Products
                 await apiDbContext.SaveChangesAsync();
 
                 return ModelToDTO(product);
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
-
-        public async Task<string> UpdatePictureAsync(IFormFile file, int productID, IConfiguration configuration, ApiDbContext apiDbContext) 
-        {
-            try
-            {
-                Product product = await apiDbContext.Products.FindAsync(productID);
-                if (product == null) 
-                {
-                    throw new Exception($"No se ha encontrado el producto con id {productID}");
-                }
-
-                string folderName = Path.Combine(configuration["ResourcesFolder"].ToString(),
-                                                 configuration["ImagesFolder"].ToString(),
-                                                 configuration["ProductsFolder"].ToString());
-
-                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-                string fileName = string.Join("-", product.Shop.Code, product.Code);
-
-                string fullPath = Path.Combine(pathToSave, fileName);
-                string dbPath = Path.Combine(folderName, fileName);
-
-                if (File.Exists(fullPath)) 
-                {
-                    File.Delete(fullPath);
-                }
-
-                FileStream stream = new FileStream(fullPath, FileMode.Create);
-                await file.CopyToAsync(stream);
-                await stream.DisposeAsync();
-
-                product.Picture = dbPath;
-                await apiDbContext.SaveChangesAsync();
-
-                return dbPath;
             }
             catch (Exception e)
             {

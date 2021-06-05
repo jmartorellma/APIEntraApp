@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using APIEntraApp.Data;
 using APIEntraApp.Services.Shops.Core;
@@ -13,12 +16,15 @@ namespace APIEntraApp.Controllers
     [Route("/Shop")]
     public class ShopController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly IShopService _shopService;
         private readonly ApiDbContext _apiDbContext;
         public ShopController(
+            IConfiguration configuration,
             ApiDbContext apiDbContext,
             IShopService shopService)
         {
+            _configuration = configuration;
             _apiDbContext = apiDbContext;
             _shopService = shopService;
         }
@@ -73,6 +79,37 @@ namespace APIEntraApp.Controllers
                 }
 
                 return Ok(await _shopService.CreateAsync(model, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpPost("Picture")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> UpdatePicture(ShopPicturePostRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de subir imagen inválida");
+                }
+
+                IFormCollection formCollection = await Request.ReadFormAsync();
+                if (formCollection == null || !formCollection.Any())
+                {
+                    throw new Exception("No se ha encontrado la imagen en la llamada");
+                }
+
+                IFormFile file = formCollection.Files.First();
+                if (file == null || file.Length == 0)
+                {
+                    throw new Exception("No se ha encontrado la imagen en la llamada");
+                }
+
+                return Ok(await _shopService.UpdatePictureAsync(file, model.ShopId, _configuration, _apiDbContext));
             }
             catch (Exception e)
             {

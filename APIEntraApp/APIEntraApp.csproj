@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Folder Include="Data\BAK\" />
+    <Folder Include="Resources\Images\Providers\" />
     <Folder Include="Resources\Images\Users\" />
     <Folder Include="Resources\Images\Shops\" />
     <Folder Include="Resources\Images\Products\" />
@@ -25,7 +26,6 @@
     <Folder Include="Services\Deliveries\" />
     <Folder Include="Services\PaymentStatuses\" />
     <Folder Include="Services\Purchases\" />
-    <Folder Include="Services\Providers\" />
   </ItemGroup>
 
 </Project>

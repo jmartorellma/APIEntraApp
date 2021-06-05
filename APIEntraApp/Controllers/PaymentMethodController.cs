@@ -8,7 +8,7 @@ using APIEntraApp.Services.PaymentMethods.Models.Request;
 
 namespace APIEntraApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "SuperUser,Admin,Shop")]
     [ApiController]
     [Route("/PaymentMethod")]
     public class PaymentMethodController : ControllerBase
@@ -25,7 +25,6 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> GetAll()
         {
             try
@@ -44,7 +43,6 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -63,7 +61,6 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Create(PaymentMethodPostRequest model)
         {
             try
@@ -82,7 +79,6 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Update(PaymentMethodPutRequest model)
         {
             try
@@ -101,7 +97,6 @@ namespace APIEntraApp.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Delete(int id)
         {
             try

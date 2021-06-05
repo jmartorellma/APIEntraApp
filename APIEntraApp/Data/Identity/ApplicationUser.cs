@@ -9,6 +9,7 @@ namespace APIEntraApp.Data.Identity
      {
         public string   Name         { get; set; }
         public string   Surname      { get; set; }
+        public string   Picture      { get; set; }
         public DateTime CreationDate { get; set; }
         public bool     IsActive     { get; set; }
 

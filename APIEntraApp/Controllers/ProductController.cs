@@ -16,7 +16,7 @@ namespace APIEntraApp.Controllers
     [Route("/Product")]
     public class ProductController : ControllerBase
     {
-        public readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
         private readonly IProductService _productService;
         private readonly ApiDbContext _apiDbContext;
         
@@ -87,9 +87,9 @@ namespace APIEntraApp.Controllers
             }
         }
                 
-        [HttpPost("{id}/Picture")]
+        [HttpPost("Picture")]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
-        public async Task<IActionResult> UpdatePicture(ProductPicturePutRequest model) 
+        public async Task<IActionResult> UpdatePicture(ProductPicturePostRequest model) 
         {
             try
             {

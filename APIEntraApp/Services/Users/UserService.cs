@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Users.Core;
@@ -114,6 +117,52 @@ namespace APIEntraApp.Services.Users
                     PhoneNumber = user.PhoneNumber,
                     CreationDate = user.CreationDate
                 };
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<string> UpdatePictureAsync(IFormFile file, int userId, IConfiguration configuration, UserManager<ApplicationUser> userManager)
+        {
+            try
+            {
+                ApplicationUser user = await userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                {
+                    throw new Exception($"Usuario con id {userId} no encontrado");
+                }
+
+                string folderName = Path.Combine(configuration["ResourcesFolder"].ToString(),
+                                                 configuration["ImagesFolder"].ToString(),
+                                                 configuration["UsersFolder"].ToString());
+
+                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                string fileName = user.UserName;
+
+                string fullPath = Path.Combine(pathToSave, fileName);
+                string dbPath = Path.Combine(folderName, fileName);
+
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+
+                FileStream stream = new FileStream(fullPath, FileMode.Create);
+                await file.CopyToAsync(stream);
+                await stream.DisposeAsync();
+
+                user.Picture = dbPath;
+
+                var updateResult = await userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded) 
+                {
+                    throw new Exception("Error añadiendo la imagen al usuario");
+                }
+
+                return dbPath;
             }
             catch (Exception e)
             {

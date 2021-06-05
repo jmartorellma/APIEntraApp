@@ -1,6 +1,6 @@
 ﻿namespace APIEntraApp.Services.Products.Models.Request
 {
-    public class ProductPicturePutRequest
+    public class ProductPicturePostRequest
     {
         public int ProductId { get; set; }
     }
