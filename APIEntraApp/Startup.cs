@@ -37,7 +37,14 @@ namespace APIEntraApp
                 config.UseSqlServer(connectionString);
             });
 
-            services.AddIdentityCore<ApplicationUser>(options => { });
+            services.AddIdentityCore<ApplicationUser>(config => {
+                config.Password.RequiredLength = 6;
+                config.Password.RequireDigit = false;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireLowercase = false;
+                config.User.RequireUniqueEmail = true;
+            });
             new IdentityBuilder(typeof(ApplicationUser), typeof(ApplicationRole), services)
                 .AddRoleManager<RoleManager<ApplicationRole>>()
                 .AddSignInManager<SignInManager<ApplicationUser>>()

@@ -30,14 +30,15 @@ namespace APIEntraApp.Services.Users.Models.Request
         [Required]
         public bool IsActive { get; set; }
 
+        [Required]
+        public bool IsProfile { get; set; }
+
         [DataType(DataType.Password)]
         public string OldPassword { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
         [Compare("Password", ErrorMessage = "Los campos Password no coinciden")]
         public string ConfirmPassword { get; set; }

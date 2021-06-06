@@ -12,6 +12,7 @@ using APIEntraApp.Services.Users.Core;
 using APIEntraApp.Services.Users.Models.DTOs;
 using APIEntraApp.Services.Users.Models.Request;
 using APIEntraApp.Data.Models;
+using System.Security.Claims;
 
 namespace APIEntraApp.Services.Users
 {
@@ -35,6 +36,25 @@ namespace APIEntraApp.Services.Users
                 return users;
             }
             catch(Exception e) 
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<List<string>> GetRolesAsync(ApiDbContext apiDbContext, UserManager<ApplicationUser> userManager, ClaimsPrincipal currentUser)
+        {
+            try
+            {
+                ApplicationUser user = await userManager.GetUserAsync(currentUser);
+
+                if (await userManager.IsInRoleAsync(user, "SuperUser")) 
+                {
+                    return await Task.Run(() => apiDbContext.Roles.Select(r => r.Name).ToList());
+                }
+
+                return await Task.Run(() => apiDbContext.Roles.Where(r => !r.NormalizedName.Equals("SUPERUSER") && !r.NormalizedName.Equals("ADMIN")).Select(r => r.Name).ToList());
+            }
+            catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
@@ -332,7 +352,7 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager)
+        public async Task<UserDTO> UpdateAsync(UserPutRequest model, UserManager<ApplicationUser> userManager, ClaimsPrincipal currentUser)
         {
             try
             {
@@ -340,6 +360,13 @@ namespace APIEntraApp.Services.Users
                 if (appUser == null)
                 {
                     throw new Exception($"No existe el usuario con id {model.Id}");
+                }
+
+                ApplicationUser user = await userManager.GetUserAsync(currentUser);
+                if ((!await userManager.IsInRoleAsync(user, "SuperUser") && await userManager.IsInRoleAsync(appUser, "SuperUser")) ||
+                    (!model.IsProfile && !await userManager.IsInRoleAsync(user, "SuperUser") && await userManager.IsInRoleAsync(appUser, "Admin")))
+                {
+                    throw new Exception($"No tienes permisos para editar el usuario {appUser.UserName}");
                 }
 
                 var userFoundEmail = userManager.Users.FirstOrDefault(u => u.Id != model.Id && u.Email.ToUpper().Trim().Equals(model.Email.ToUpper().Trim()));

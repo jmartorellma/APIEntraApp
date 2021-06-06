@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
@@ -47,6 +48,27 @@ namespace APIEntraApp.Controllers
                 }
 
                 return Ok(await _userService.GetAllAsync(_userManager));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet("Roles")]
+        [Authorize(Roles = "SuperUser,Admin")]
+        public async Task<IActionResult> GetRoles()
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición inválida");
+                }
+
+                ClaimsPrincipal currentUser = User;
+
+                return Ok(await _userService.GetRolesAsync(_apiDbContext, _userManager, currentUser));
             }
             catch (Exception e)
             {
@@ -204,7 +226,9 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de actualización inválida");
                 }
 
-                return Ok(await _userService.UpdateAsync(model, _userManager));
+                ClaimsPrincipal currentUser = User;
+
+                return Ok(await _userService.UpdateAsync(model, _userManager, currentUser));
             }
             catch (Exception e)
             {
