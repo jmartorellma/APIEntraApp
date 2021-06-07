@@ -236,6 +236,26 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpPut("Password")]
+        public async Task<IActionResult> UpdatePassword(UserPasswordPutRequest model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición de actualización inválida");
+                }
+
+                ClaimsPrincipal currentUser = User;
+
+                return Ok(await _userService.UpdatePasswordAsync(model, _userManager, currentUser));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "SuperUser,Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -247,7 +267,9 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de eliminar inválida");
                 }
 
-                return Ok(await _userService.DeleteAsync(id, _userManager));
+                ClaimsPrincipal currentUser = User;
+
+                return Ok(await _userService.DeleteAsync(id, _userManager, currentUser));
             }
             catch (Exception e)
             {

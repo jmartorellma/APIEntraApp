@@ -380,15 +380,6 @@ namespace APIEntraApp.Services.Users
                 {
                     throw new Exception($"Ya existe otro usuario {model.Username}");
                 }
-
-                if (!string.IsNullOrWhiteSpace(model.OldPassword)) 
-                {
-                    var passwordResult = await userManager.ChangePasswordAsync(appUser, model.OldPassword, model.Password);
-                    if (!passwordResult.Succeeded)
-                    {
-                        throw new Exception($"ERROR actualizando la contraseña - {passwordResult.Errors}");
-                    }
-                }
                 
                 appUser.UserName = model.Username;
                 appUser.Name = model.Name;
@@ -412,23 +403,61 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<int> DeleteAsync(int id, UserManager<ApplicationUser> userManager)
+        public async Task<UserDTO> UpdatePasswordAsync(UserPasswordPutRequest model, UserManager<ApplicationUser> userManager, ClaimsPrincipal currentUser)
         {
             try
             {
-                ApplicationUser user = await userManager.FindByIdAsync(id.ToString());
-                if (user == null)
+                var appUser = await userManager.FindByIdAsync(model.Id.ToString());
+                if (appUser == null)
+                {
+                    throw new Exception($"No existe el usuario con id {model.Id}");
+                }
+
+                ApplicationUser user = await userManager.GetUserAsync(currentUser);
+                if ((!await userManager.IsInRoleAsync(user, "SuperUser") && await userManager.IsInRoleAsync(appUser, "SuperUser")) ||
+                    (!model.IsProfile && !await userManager.IsInRoleAsync(user, "SuperUser") && await userManager.IsInRoleAsync(appUser, "Admin")))
+                {
+                    throw new Exception($"No tienes permisos para editar el usuario {appUser.UserName}");
+                }
+
+                var passwordResult = await userManager.ChangePasswordAsync(appUser, model.OldPassword, model.Password);
+                if (!passwordResult.Succeeded)
+                {
+                    throw new Exception($"ERROR actualizando la contraseña - {passwordResult.Errors}");
+                }
+
+                return await ModelToDTOAsync(appUser, userManager);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<int> DeleteAsync(int id, UserManager<ApplicationUser> userManager, ClaimsPrincipal currentUser)
+        {
+            try
+            {
+                ApplicationUser appUser = await userManager.FindByIdAsync(id.ToString());
+                if (appUser == null)
                 {
                     throw new Exception($"Usuario con id {id} no encontrado");
                 }
 
-                var deletResult = await userManager.DeleteAsync(user);
-                if (!deletResult.Succeeded)
+                ApplicationUser user = await userManager.GetUserAsync(currentUser);
+                if ((!await userManager.IsInRoleAsync(user, "SuperUser") && await userManager.IsInRoleAsync(appUser, "SuperUser")) ||
+                    (!await userManager.IsInRoleAsync(user, "SuperUser") && await userManager.IsInRoleAsync(appUser, "Admin")))
                 {
-                    throw new Exception($"ERROR eliminando el ususario {user.UserName}");
+                    throw new Exception($"No tienes permisos para eliminar el usuario {appUser.UserName}");
                 }
 
-                return user.Id;
+                var deletResult = await userManager.DeleteAsync(appUser);
+                if (!deletResult.Succeeded)
+                {
+                    throw new Exception($"ERROR eliminando el ususario {appUser.UserName}");
+                }
+
+                return appUser.Id;
             }
             catch (Exception e)
             {
