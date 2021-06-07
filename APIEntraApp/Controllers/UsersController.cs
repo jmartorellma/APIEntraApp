@@ -106,7 +106,9 @@ namespace APIEntraApp.Controllers
                     throw new Exception("Petición de alta inválida");
                 }
 
-                return Ok(await _userService.CreateAsync(model, _userManager));
+                ClaimsPrincipal currentUser = User;
+
+                return Ok(await _userService.CreateAsync(model, _userManager, currentUser));
             }
             catch (Exception e)
             {

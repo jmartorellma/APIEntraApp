@@ -78,10 +78,16 @@ namespace APIEntraApp.Services.Users
             }
         }
 
-        public async Task<UserDTO> CreateAsync(UserPostRequest model, UserManager<ApplicationUser> userManager)
+        public async Task<UserDTO> CreateAsync(UserPostRequest model, UserManager<ApplicationUser> userManager, ClaimsPrincipal currentUser)
         {
             try
             {
+                ApplicationUser claimUser = await userManager.GetUserAsync(currentUser);
+                if (!await userManager.IsInRoleAsync(claimUser, "SuperUser") || !await userManager.IsInRoleAsync(claimUser, "Admin"))
+                {
+                    throw new Exception($"No tienes permisos para crear usuarios");
+                }
+
                 var userFound = await userManager.FindByEmailAsync(model.Email);
                 if (userFound != null)
                 {
@@ -102,7 +108,7 @@ namespace APIEntraApp.Services.Users
                     Name = model.Name,
                     Surname = model.Surname,
                     CreationDate = DateTime.Now,
-                    IsActive = true
+                    IsActive = model.IsActive
                 };
 
                 var createResult = await userManager.CreateAsync(applicationUser, model.Password);

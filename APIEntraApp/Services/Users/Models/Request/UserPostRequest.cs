@@ -25,6 +25,9 @@ namespace APIEntraApp.Services.Users.Models.Request
         public string Email { get; set; }
 
         [Required]
+        public bool IsActive { get; set; }
+
+        [Required]
         public string Role { get; set; }
 
         [Required]

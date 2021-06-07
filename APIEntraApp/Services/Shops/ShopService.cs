@@ -57,6 +57,24 @@ namespace APIEntraApp.Services.Shops
             }
         }
 
+        public async Task<ShopDTO> GetByOwnerIdAsync(int ownerId, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                Shop shop = apiDbContext.Shops.FirstOrDefault(s => s.OwnerId == ownerId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda del usuario con id {ownerId} no encontrada");
+                }
+
+                return await ModelToDTOAsync(shop, apiDbContext);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<ShopDTO> CreateAsync(ShopPostRequest model, ApiDbContext apiDbContext)
         {
             try

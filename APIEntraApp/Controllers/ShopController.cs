@@ -67,6 +67,25 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpGet("Owner/{id}")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> GetByOwnerId(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición inválida");
+                }
+
+                return Ok(await _shopService.GetByOwnerIdAsync(id, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "SuperUser,Admin")]
         public async Task<IActionResult> Create(ShopPostRequest model)
