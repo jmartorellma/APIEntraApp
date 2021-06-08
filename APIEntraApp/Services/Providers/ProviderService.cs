@@ -19,7 +19,17 @@ namespace APIEntraApp.Services.Providers
         {
             try
             {
-                return await Task.Run(() => apiDbContext.Providers.Select(s => ModelToDTO(s)).ToList());
+                return await Task.Run(() =>
+                {
+                    List<ProviderDTO> result = new List<ProviderDTO>();
+
+                    apiDbContext.Providers.ToList().ForEach(p =>
+                    {
+                        result.Add(ModelToDTO(p));
+                    });
+
+                    return result;
+                });
             }
             catch (Exception e)
             {

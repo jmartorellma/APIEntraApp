@@ -16,7 +16,17 @@ namespace APIEntraApp.Services.PaymentMethods
         {
             try
             {
-                return await Task.Run(() => apiDbContext.PaymentMethods.Select(s => ModelToDTO(s)).ToList());
+                return await Task.Run(() =>
+                {
+                    List<PaymentMethodDTO> result = new List<PaymentMethodDTO>();
+
+                    apiDbContext.PaymentMethods.ToList().ForEach(p =>
+                    {
+                        result.Add(ModelToDTO(p));
+                    });
+
+                    return result;
+                });
             }
             catch (Exception e)
             {

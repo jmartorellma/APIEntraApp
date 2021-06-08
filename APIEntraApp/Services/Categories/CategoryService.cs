@@ -16,7 +16,17 @@ namespace APIEntraApp.Services.Categories
         {
             try
             {
-                return await Task.Run(() => apiDbContext.Categories.Select(s => ModelToDTO(s)).ToList());
+                return await Task.Run(() =>
+                {
+                    List<CategoryDTO> result = new List<CategoryDTO>();
+
+                    apiDbContext.Categories.ToList().ForEach(c =>
+                    {
+                        result.Add(ModelToDTO(c));
+                    });
+
+                    return result;
+                });
             }
             catch (Exception e)
             {

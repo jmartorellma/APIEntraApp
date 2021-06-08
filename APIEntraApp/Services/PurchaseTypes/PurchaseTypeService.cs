@@ -16,7 +16,17 @@ namespace APIEntraApp.Services.PurchaseTypes
         {
             try
             {
-                return await Task.Run(() => apiDbContext.PurchaseTypes.Select(s => ModelToDTO(s)).ToList());
+                return await Task.Run(() =>
+                {
+                    List<PurchaseTypeDTO> result = new List<PurchaseTypeDTO>();
+
+                    apiDbContext.PurchaseTypes.ToList().ForEach(p =>
+                    {
+                        result.Add(ModelToDTO(p));
+                    });
+
+                    return result;
+                });
             }
             catch (Exception e)
             {
@@ -87,12 +97,12 @@ namespace APIEntraApp.Services.PurchaseTypes
                     throw new Exception($"Ya existe un el tipo de pedido con el código {model.Code}");
                 }
 
-                purchaseTypeFound.Code = model.Code;
-                purchaseTypeFound.Name = model.Name;
+                purchaseType.Code = model.Code;
+                purchaseType.Name = model.Name;
 
                 await apiDbContext.SaveChangesAsync();
 
-                return ModelToDTO(purchaseTypeFound);
+                return ModelToDTO(purchaseType);
             }
             catch (Exception e)
             {

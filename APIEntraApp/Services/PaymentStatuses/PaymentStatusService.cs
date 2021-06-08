@@ -16,7 +16,17 @@ namespace APIEntraApp.Services.PaymentStatuses
         {
             try
             {
-                return await Task.Run(() => apiDbContext.PaymentStatus.Select(s => ModelToDTO(s)).ToList());
+                return await Task.Run(() => 
+                {
+                    List<PaymentStatusDTO> result = new List<PaymentStatusDTO>();
+
+                    apiDbContext.PaymentStatus.ToList().ForEach(p => 
+                    {
+                        result.Add(ModelToDTO(p));
+                    });
+
+                    return result;
+                });
             }
             catch (Exception e)
             {

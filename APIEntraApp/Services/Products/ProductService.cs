@@ -19,7 +19,17 @@ namespace APIEntraApp.Services.Products
         {
             try
             {
-                return await Task.Run(() => apiDbContext.Products.Select(s => ModelToDTO(s)).ToList());
+                return await Task.Run(() =>
+                {
+                    List<ProductDTO> result = new List<ProductDTO>();
+
+                    apiDbContext.Products.ToList().ForEach(p =>
+                    {
+                        result.Add(ModelToDTO(p));
+                    });
+
+                    return result;
+                });
             }
             catch(Exception e) 
             {
