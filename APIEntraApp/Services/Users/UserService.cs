@@ -83,62 +83,64 @@ namespace APIEntraApp.Services.Users
             try
             {
                 ApplicationUser claimUser = await userManager.GetUserAsync(currentUser);
-                if (!await userManager.IsInRoleAsync(claimUser, "SuperUser") || !await userManager.IsInRoleAsync(claimUser, "Admin"))
+                if (await userManager.IsInRoleAsync(claimUser, "SuperUser") || await userManager.IsInRoleAsync(claimUser, "Admin"))
+                {
+                    var userFound = await userManager.FindByEmailAsync(model.Email);
+                    if (userFound != null)
+                    {
+                        throw new Exception($"Ya existe un usuario en el sisitema con el Email {model.Email}");
+                    }
+
+                    userFound = await userManager.FindByNameAsync(model.Username);
+                    if (userFound != null)
+                    {
+                        throw new Exception($"Ya existe un usuario en el sisitema con el Usuario {model.Username}");
+                    }
+
+                    ApplicationUser applicationUser = new ApplicationUser
+                    {
+                        UserName = model.Username,
+                        Email = model.Email,
+                        PhoneNumber = model.PhoneNumber,
+                        Name = model.Name,
+                        Surname = model.Surname,
+                        CreationDate = DateTime.Now,
+                        IsActive = model.IsActive
+                    };
+
+                    var createResult = await userManager.CreateAsync(applicationUser, model.Password);
+
+                    if (!createResult.Succeeded)
+                    {
+                        throw new Exception($"ERROR dando de alta el usuario - {createResult.Errors}");
+                    }
+
+                    var user = await userManager.FindByEmailAsync(applicationUser.Email);
+                    var roleresult = await userManager.AddToRoleAsync(user, model.Role);
+
+                    if (!roleresult.Succeeded)
+                    {
+                        await userManager.DeleteAsync(user);
+                        throw new Exception($"ERROR asignando el rol de usuario {model.Role} - {roleresult.Errors}");
+                    }
+
+                    return new UserDTO
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Surname = user.Surname,
+                        IsActive = user.IsActive,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        Role = model.Role,
+                        PhoneNumber = user.PhoneNumber,
+                        CreationDate = user.CreationDate
+                    };
+                }
+                else 
                 {
                     throw new Exception($"No tienes permisos para crear usuarios");
                 }
-
-                var userFound = await userManager.FindByEmailAsync(model.Email);
-                if (userFound != null)
-                {
-                    throw new Exception($"Ya existe un usuario en el sisitema con el Email {model.Email}");
-                }
-
-                userFound = await userManager.FindByNameAsync(model.Username);
-                if (userFound != null)
-                {
-                    throw new Exception($"Ya existe un usuario en el sisitema con el Usuario {model.Username}");
-                }
-
-                ApplicationUser applicationUser = new ApplicationUser
-                {
-                    UserName = model.Username,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    Name = model.Name,
-                    Surname = model.Surname,
-                    CreationDate = DateTime.Now,
-                    IsActive = model.IsActive
-                };
-
-                var createResult = await userManager.CreateAsync(applicationUser, model.Password);
-
-                if (!createResult.Succeeded)
-                {
-                    throw new Exception($"ERROR dando de alta el usuario - {createResult.Errors}");
-                }
-
-                var user = await userManager.FindByEmailAsync(applicationUser.Email);
-                var roleresult = await userManager.AddToRoleAsync(user, model.Role);
-
-                if (!roleresult.Succeeded)
-                {
-                    await userManager.DeleteAsync(user);
-                    throw new Exception($"ERROR asignando el rol de usuario {model.Role} - {roleresult.Errors}");
-                }
-
-                return new UserDTO
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    Surname = user.Surname,
-                    IsActive = user.IsActive,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Role = model.Role,
-                    PhoneNumber = user.PhoneNumber,
-                    CreationDate = user.CreationDate
-                };
             }
             catch (Exception e)
             {
