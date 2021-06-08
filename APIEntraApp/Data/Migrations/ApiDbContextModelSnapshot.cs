@@ -453,12 +453,7 @@ namespace APIEntraApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ShopId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ShopId");
 
                     b.ToTable("PurchaseTypes");
                 });
@@ -541,6 +536,21 @@ namespace APIEntraApp.Data.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Shops");
+                });
+
+            modelBuilder.Entity("APIEntraApp.Data.Models.Shop_PurchaseType", b =>
+                {
+                    b.Property<int>("ShopId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PurchaseTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShopId", "PurchaseTypeId");
+
+                    b.HasIndex("PurchaseTypeId");
+
+                    b.ToTable("Shop_PurchaseType");
                 });
 
             modelBuilder.Entity("APIEntraApp.Data.Models.Stock", b =>
@@ -908,13 +918,6 @@ namespace APIEntraApp.Data.Migrations
                     b.Navigation("PurchaseType");
                 });
 
-            modelBuilder.Entity("APIEntraApp.Data.Models.PurchaseType", b =>
-                {
-                    b.HasOne("APIEntraApp.Data.Models.Shop", null)
-                        .WithMany("AllowedPurchaseTypes")
-                        .HasForeignKey("ShopId");
-                });
-
             modelBuilder.Entity("APIEntraApp.Data.Models.Purchase_Cart", b =>
                 {
                     b.HasOne("APIEntraApp.Data.Models.Purchase", "Purchase")
@@ -943,6 +946,25 @@ namespace APIEntraApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("APIEntraApp.Data.Models.Shop_PurchaseType", b =>
+                {
+                    b.HasOne("APIEntraApp.Data.Models.PurchaseType", "PurcahseType")
+                        .WithMany("Shops_PurchaseType")
+                        .HasForeignKey("PurchaseTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("APIEntraApp.Data.Models.Shop", "Shop")
+                        .WithMany("Shop_PurchaseTypes")
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PurcahseType");
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("APIEntraApp.Data.Models.User_Product_Cart", b =>
@@ -1155,13 +1177,18 @@ namespace APIEntraApp.Data.Migrations
                     b.Navigation("Purchase_Carts");
                 });
 
+            modelBuilder.Entity("APIEntraApp.Data.Models.PurchaseType", b =>
+                {
+                    b.Navigation("Shops_PurchaseType");
+                });
+
             modelBuilder.Entity("APIEntraApp.Data.Models.Shop", b =>
                 {
                     b.Navigation("AllowedPaymentMethods");
 
-                    b.Navigation("AllowedPurchaseTypes");
-
                     b.Navigation("Products");
+
+                    b.Navigation("Shop_PurchaseTypes");
 
                     b.Navigation("User_Shop_Favorites");
 

@@ -101,6 +101,21 @@ namespace APIEntraApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PurchaseTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PurchaseTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Stocks",
                 columns: table => new
                 {
@@ -347,21 +362,23 @@ namespace APIEntraApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PurchaseTypes",
+                name: "Shop_PurchaseType",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ShopId = table.Column<int>(type: "int", nullable: true)
+                    ShopId = table.Column<int>(type: "int", nullable: false),
+                    PurchaseTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PurchaseTypes", x => x.Id);
+                    table.PrimaryKey("PK_Shop_PurchaseType", x => new { x.ShopId, x.PurchaseTypeId });
                     table.ForeignKey(
-                        name: "FK_PurchaseTypes_Shops_ShopId",
+                        name: "FK_Shop_PurchaseType_PurchaseTypes_PurchaseTypeId",
+                        column: x => x.PurchaseTypeId,
+                        principalTable: "PurchaseTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Shop_PurchaseType_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
                         principalColumn: "Id",
@@ -442,6 +459,43 @@ namespace APIEntraApp.Data.Migrations
                         principalTable: "Shops",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Purchases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    StatusDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentMethodId = table.Column<int>(type: "int", nullable: false),
+                    PurchaseTypeId = table.Column<int>(type: "int", nullable: false),
+                    PaymentStatusId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Purchases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Purchases_PaymentMethods_PaymentMethodId",
+                        column: x => x.PaymentMethodId,
+                        principalTable: "PaymentMethods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Purchases_PaymentStatus_PaymentStatusId",
+                        column: x => x.PaymentStatusId,
+                        principalTable: "PaymentStatus",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Purchases_PurchaseTypes_PurchaseTypeId",
+                        column: x => x.PurchaseTypeId,
+                        principalTable: "PurchaseTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -548,43 +602,6 @@ namespace APIEntraApp.Data.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Purchases",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    StatusDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaymentMethodId = table.Column<int>(type: "int", nullable: false),
-                    PurchaseTypeId = table.Column<int>(type: "int", nullable: false),
-                    PaymentStatusId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Purchases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Purchases_PaymentMethods_PaymentMethodId",
-                        column: x => x.PaymentMethodId,
-                        principalTable: "PaymentMethods",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Purchases_PaymentStatus_PaymentStatusId",
-                        column: x => x.PaymentStatusId,
-                        principalTable: "PaymentStatus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Purchases_PurchaseTypes_PurchaseTypeId",
-                        column: x => x.PurchaseTypeId,
-                        principalTable: "PurchaseTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -739,9 +756,9 @@ namespace APIEntraApp.Data.Migrations
                 column: "UserProductCartId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchaseTypes_ShopId",
-                table: "PurchaseTypes",
-                column: "ShopId");
+                name: "IX_Shop_PurchaseType_PurchaseTypeId",
+                table: "Shop_PurchaseType",
+                column: "PurchaseTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shops_OwnerId",
@@ -817,6 +834,9 @@ namespace APIEntraApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Purchases_Carts");
+
+            migrationBuilder.DropTable(
+                name: "Shop_PurchaseType");
 
             migrationBuilder.DropTable(
                 name: "Users_Products_Favorites");

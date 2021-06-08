@@ -205,7 +205,11 @@ namespace APIEntraApp.Services.Shops
                     throw new Exception($"Tipo de pedido con id {model.PurchaseTypeId} no encontrado");
                 }
 
-                shop.AllowedPurchaseTypes.Add(purchaseType);
+                shop.Shop_PurchaseTypes.Add(new Shop_PurchaseType 
+                { 
+                    ShopId = model.ShopId,
+                    PurchaseTypeId = model.PurchaseTypeId
+                });
 
                 await apiDbContext.SaveChangesAsync();
 
@@ -358,7 +362,13 @@ namespace APIEntraApp.Services.Shops
                     throw new Exception($"Tipo de pedido con id {model.PurchaseTypeId} no encontrado");
                 }
 
-                shop.AllowedPurchaseTypes.Remove(purchaseType);
+                Shop_PurchaseType rel = shop.Shop_PurchaseTypes.FirstOrDefault(sp => sp.PurchaseTypeId == model.PurchaseTypeId && sp.ShopId == model.ShopId);
+                if (rel == null) 
+                {
+                    throw new Exception($"Relación entre {shop.Name} y {purchaseType.Name} no encontrada");
+                }
+
+                shop.Shop_PurchaseTypes.Remove(rel);
 
                 await apiDbContext.SaveChangesAsync();
 

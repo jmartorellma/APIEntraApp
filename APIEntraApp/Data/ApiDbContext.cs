@@ -97,6 +97,21 @@ namespace APIEntraApp.Data
                 .HasForeignKey(si => si.ShopId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Shop_PurchaseType>()
+                .HasKey(k => new { k.ShopId, k.PurchaseTypeId });
+
+            builder.Entity<Shop_PurchaseType>()
+                .HasOne(s => s.Shop)
+                .WithMany(sp => sp.Shop_PurchaseTypes)
+                .HasForeignKey(sp => sp.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Shop_PurchaseType>()
+                .HasOne(p => p.PurcahseType)
+                .WithMany(ps => ps.Shops_PurchaseType)
+                .HasForeignKey(sp => sp.PurchaseTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<Product>()
                .Property(p => p.Price).HasPrecision(18,2);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace APIEntraApp.Data.Models
@@ -13,6 +14,9 @@ namespace APIEntraApp.Data.Models
         public string   Name         { get; set; }
         [Required]
         public DateTime CreationDate { get; set; }
+
+        // Navigation properties
+        public List<Shop_PurchaseType> Shops_PurchaseType { get; set; }
     }
     
 }
