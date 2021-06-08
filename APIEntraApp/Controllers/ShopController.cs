@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.Authorization;
 using APIEntraApp.Data;
 using APIEntraApp.Services.Shops.Core;
 using APIEntraApp.Services.Shops.Models.Request;
+using APIEntraApp.Data.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace APIEntraApp.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("/Shop")]
+    [Route("/Shops")]
     public class ShopController : ControllerBase
     {
         private readonly IConfiguration _configuration;

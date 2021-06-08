@@ -12,7 +12,6 @@
         public decimal MinAmountTaxes { get; set; }
         public string  Address        { get; set; }
         public string  City           { get; set; }
-        public string  Picture        { get; set; }
         public string  Web            { get; set; }
         public int     OwnerId        { get; set; }
     }

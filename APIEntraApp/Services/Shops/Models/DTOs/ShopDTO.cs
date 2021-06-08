@@ -18,6 +18,7 @@ namespace APIEntraApp.Services.Shops.Models.DTOs
         public string   Picture        { get; set; }
         public string   Web            { get; set; }
         public string   Owner          { get; set; }
+        public int      OwnerId        { get; set; }
         public DateTime CreationDate   { get; set; }
     }
 }

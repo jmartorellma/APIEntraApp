@@ -6,10 +6,11 @@ using APIEntraApp.Data;
 using APIEntraApp.Data.Models;
 using APIEntraApp.Services.Categories.Models.DTOs;
 using APIEntraApp.Services.Categories.Models.Request;
+using APIEntraApp.Services.Categories.Core;
 
 namespace APIEntraApp.Services.Categories
 {
-    public class CategoryService
+    public class CategoryService : ICategoryService 
     {
         public async Task<List<CategoryDTO>> GetAllAsync(ApiDbContext apiDbContext)
         {

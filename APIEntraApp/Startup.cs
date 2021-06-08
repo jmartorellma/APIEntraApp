@@ -15,6 +15,26 @@ using APIEntraApp.Services.Users;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using APIEntraApp.Services.Carts.Core;
+using APIEntraApp.Services.Carts;
+using APIEntraApp.Services.Categories.Core;
+using APIEntraApp.Services.Categories;
+using APIEntraApp.Services.Deliveries.Core;
+using APIEntraApp.Services.Deliveries;
+using APIEntraApp.Services.PaymentMethods;
+using APIEntraApp.Services.PaymentMethods.Core;
+using APIEntraApp.Services.PaymentStatuses;
+using APIEntraApp.Services.PaymentStatuses.Core;
+using APIEntraApp.Services.Products.Core;
+using APIEntraApp.Services.Products;
+using APIEntraApp.Services.Providers.Core;
+using APIEntraApp.Services.Providers;
+using APIEntraApp.Services.Purchases;
+using APIEntraApp.Services.Purchases.Core;
+using APIEntraApp.Services.PurchaseTypes;
+using APIEntraApp.Services.PurchaseTypes.Core;
+using APIEntraApp.Services.Shops.Core;
+using APIEntraApp.Services.Shops;
 
 namespace APIEntraApp
 {
@@ -37,6 +57,19 @@ namespace APIEntraApp
                 config.UseSqlServer(connectionString);
             });
 
+            services.AddSingleton<ICartService, CartService>();
+            services.AddSingleton<ICategoryService, CategoryService>();
+            services.AddSingleton<IDeliveryService, DeliveryService>();
+            //services.AddSingleton<IMessageService, MessageService>();
+            services.AddSingleton<IPaymentMethodService, PaymentMethodService>();
+            services.AddSingleton<IPaymentStatusService, PaymentStatusService>();
+            services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton<IProviderService, ProviderService>();
+            services.AddSingleton<IPurchaseService, PurchaseService>();
+            services.AddSingleton<IPurchaseTyeService, PurchaseTypeService>();
+            services.AddSingleton<IShopService, ShopService>();
+            services.AddSingleton<IUserService, UserService>();
+
             services.AddIdentityCore<ApplicationUser>(config => {
                 config.Password.RequiredLength = 6;
                 config.Password.RequireDigit = false;
@@ -56,15 +89,13 @@ namespace APIEntraApp
                 options.MemoryBufferThreshold = int.MaxValue;
             });
 
-            services.AddSingleton<IUserService, UserService>();
-
             services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", config =>
-                {
-                    config.Authority = _configuration["IdentityServerURL"].ToString();
-                    config.Audience = _configuration["ApiEntraName"].ToString();
-                    config.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-                });
+               .AddJwtBearer("Bearer", config =>
+               {
+                   config.Authority = _configuration["IdentityServerURL"].ToString();
+                   config.Audience = _configuration["ApiEntraName"].ToString();
+                   config.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+               });
 
             services.AddCors(config => 
             {

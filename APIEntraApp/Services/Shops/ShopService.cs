@@ -280,7 +280,6 @@ namespace APIEntraApp.Services.Shops
                 shop.MinAmountTaxes = model.MinAmountTaxes;
                 shop.Address = model.Address;
                 shop.City = model.City;
-                shop.Picture = model.Picture;
                 shop.Web = model.Web;
                 shop.OwnerId = model.OwnerId;
 
@@ -419,6 +418,7 @@ namespace APIEntraApp.Services.Shops
                 Picture = shop.Picture,
                 Web = shop.Web,
                 Owner = user.UserName,
+                OwnerId = user.Id,
                 CreationDate = shop.CreationDate
             };
         }
