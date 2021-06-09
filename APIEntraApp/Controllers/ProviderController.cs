@@ -87,37 +87,6 @@ namespace APIEntraApp.Controllers
             }
         }
 
-        [HttpPost("Picture")]
-        [Authorize(Roles = "SuperUser,Admin,Shop")]
-        public async Task<IActionResult> UpdatePicture(ProviderPicturePostRequest model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    throw new Exception("Petición de subir imagen inválida");
-                }
-
-                IFormCollection formCollection = await Request.ReadFormAsync();
-                if (formCollection == null || !formCollection.Any())
-                {
-                    throw new Exception("No se ha encontrado la imagen en la llamada");
-                }
-
-                IFormFile file = formCollection.Files.First();
-                if (file == null || file.Length == 0)
-                {
-                    throw new Exception("No se ha encontrado la imagen en la llamada");
-                }
-
-                return Ok(await _providerService.UpdatePictureAsync(file, model.ProviderId, _configuration, _apiDbContext));
-            }
-            catch (Exception e)
-            {
-                return StatusCode(500, e.Message);
-            }
-        }
-
         [HttpPut]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Update(ProviderPutRequest model)

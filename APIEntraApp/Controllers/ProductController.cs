@@ -68,6 +68,25 @@ namespace APIEntraApp.Controllers
             }
         }
 
+        [HttpGet("Shop/{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByShopId(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición inválida");
+                }
+
+                return Ok(await _productService.GetByShopIdAsync(id, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
         public async Task<IActionResult> Create(ProductPostRequest model)

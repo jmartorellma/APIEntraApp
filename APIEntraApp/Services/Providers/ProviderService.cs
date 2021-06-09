@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using APIEntraApp.Data;
 using APIEntraApp.Data.Models;
 using APIEntraApp.Services.Providers.Core;
@@ -115,47 +112,6 @@ namespace APIEntraApp.Services.Providers
             }
         }
 
-        public async Task<string> UpdatePictureAsync(IFormFile file, int providerId, IConfiguration configuration, ApiDbContext apiDbContext)
-        {
-            try
-            {
-                Provider provider = await apiDbContext.Providers.FindAsync(providerId);
-                if (provider == null)
-                {
-                    throw new Exception($"No se ha encontrado el proveedor con id {providerId}");
-                }
-
-                string folderName = Path.Combine(configuration["ResourcesFolder"].ToString(),
-                                                 configuration["ImagesFolder"].ToString(),
-                                                 configuration["ProvidersFolder"].ToString());
-
-                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-                string fileName = provider.Code;
-
-                string fullPath = Path.Combine(pathToSave, fileName);
-                string dbPath = Path.Combine(folderName, fileName);
-
-                if (File.Exists(fullPath))
-                {
-                    File.Delete(fullPath);
-                }
-
-                FileStream stream = new FileStream(fullPath, FileMode.Create);
-                await file.CopyToAsync(stream);
-                await stream.DisposeAsync();
-
-                provider.Picture = dbPath;
-                await apiDbContext.SaveChangesAsync();
-
-                return dbPath;
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
-            }
-        }
-
         public async Task<int> DeleteAsync(int id, ApiDbContext apiDbContext)
         {
             try
@@ -186,7 +142,6 @@ namespace APIEntraApp.Services.Providers
                 Id = provider.Id,
                 Code = provider.Code,
                 Name = provider.Name,
-                Picture = provider.Picture,
                 Web = provider.Web,
                 CreationDate = provider.CreationDate
             };

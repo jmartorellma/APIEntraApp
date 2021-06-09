@@ -12,6 +12,7 @@ namespace APIEntraApp.Services.Products.Core
     {
         Task<List<ProductDTO>> GetAllAsync(ApiDbContext apiDbContext);
         Task<ProductDTO> GetByIdAsync(int id, ApiDbContext apiDbContext);
+        Task<List<ProductDTO>> GetByShopIdAsync(int shopId, ApiDbContext apiDbContext);
         Task<ProductDTO> CreateAsync(ProductPostRequest model, ApiDbContext apiDbContext);
         Task<string> UpdatePictureAsync(IFormFile file, int productID, IConfiguration configuration, ApiDbContext apiDbContext);
         Task<ProductDTO> UpdateAsync(ProductPutRequest model, ApiDbContext apiDbContext);

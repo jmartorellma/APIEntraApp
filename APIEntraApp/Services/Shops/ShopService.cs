@@ -136,11 +136,11 @@ namespace APIEntraApp.Services.Shops
 
                 string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                string extension = file.ContentType.Split("/")[1];
-                string fileName = $"{shop.Code}.{extension}";
+                //string extension = file.ContentType.Split("/")[1];
+                //string fileName = $"{shop.Code}.{extension}";
 
-                string fullPath = Path.Combine(pathToSave, fileName);
-                string dbPath = Path.Combine(folderName, fileName);
+                string fullPath = Path.Combine(pathToSave, file.FileName);
+                string dbPath = Path.Combine(folderName, file.FileName);
 
                 if (File.Exists(fullPath))
                 {

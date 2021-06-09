@@ -15,7 +15,9 @@ namespace APIEntraApp.Services.Products.Models.DTOs
         public decimal      Pvp          { get; set; }
         public string       Picture      { get; set; }
         public DateTime     CreationDate { get; set; }
-        public string       Shop         { get; set; }
+        public int          ShopId       { get; set; }
+        public string       ShopName     { get; set; }
+        public int          ProviderId   { get; set; }
         public List<string> Categories   { get; set; }
         public int          Stock        { get; set; }
     }

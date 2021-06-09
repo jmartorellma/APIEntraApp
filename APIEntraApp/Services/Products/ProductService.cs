@@ -55,6 +55,34 @@ namespace APIEntraApp.Services.Products
             }
         }
 
+        public async Task<List<ProductDTO>> GetByShopIdAsync(int shopId, ApiDbContext apiDbContext)
+        {
+            try
+            {
+                List<ProductDTO> result = new List<ProductDTO>();   
+
+                List<Product> productList = apiDbContext.Products.Where(p => p.ShopId == shopId).ToList();
+                if (!productList.Any())
+                {
+                    return result;
+                }
+
+                return await Task.Run(() =>
+                {
+                    productList.ForEach(p =>
+                    {
+                        result.Add(ModelToDTO(p));
+                    });
+
+                    return result;
+                });
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public async Task<ProductDTO> CreateAsync(ProductPostRequest model, ApiDbContext apiDbContext)
         {
             try
@@ -235,7 +263,9 @@ namespace APIEntraApp.Services.Products
                 Pvp = product.Pvp,
                 Picture = product.Picture,
                 CreationDate = product.CreationDate,
-                Shop = product.Shop.Code,
+                ShopId = product.Shop.Id,
+                ShopName = product.Shop.Name,
+                ProviderId = product.ProviderId,
                 Stock = product.Stock.Avaliable,
                 Categories = product.Product_Categories.Select(s => s.Category.Code).ToList()
             };

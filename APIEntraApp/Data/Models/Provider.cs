@@ -12,7 +12,6 @@ namespace APIEntraApp.Data.Models
         public string   Code         { get; set; }
         [Required]
         public string   Name         { get; set; }
-        public string   Picture      { get; set; }
         public string   Web          { get; set; }
         [Required]
         public DateTime CreationDate { get; set; }
