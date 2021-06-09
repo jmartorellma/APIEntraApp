@@ -120,7 +120,7 @@ namespace APIEntraApp.Services.Shops
             }
         }
 
-        public async Task<string> UpdatePictureAsync(IFormFile file, int shopId, IConfiguration configuration, ApiDbContext apiDbContext)
+        public async Task<PictureDTO> UpdatePictureAsync(IFormFile file, int shopId, IConfiguration configuration, ApiDbContext apiDbContext)
         {
             try
             {
@@ -136,7 +136,8 @@ namespace APIEntraApp.Services.Shops
 
                 string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                string fileName = shop.Code;
+                string extension = file.ContentType.Split("/")[1];
+                string fileName = $"{shop.Code}.{extension}";
 
                 string fullPath = Path.Combine(pathToSave, fileName);
                 string dbPath = Path.Combine(folderName, fileName);
@@ -153,7 +154,12 @@ namespace APIEntraApp.Services.Shops
                 shop.Picture = dbPath;
                 await apiDbContext.SaveChangesAsync();
 
-                return dbPath;
+                return new PictureDTO 
+                { 
+                    FilePath = dbPath,
+                    ShopId= shopId,
+                    OwnerId = shop.OwnerId
+                };
             }
             catch (Exception e)
             {

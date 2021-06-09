@@ -14,7 +14,7 @@ namespace APIEntraApp.Services.Shops.Core
         Task<ShopDTO> GetByIdAsync(int id, ApiDbContext apiDbContext);
         Task<ShopDTO> GetByOwnerIdAsync(int ownerId, ApiDbContext apiDbContext);
         Task<ShopDTO> CreateAsync(ShopPostRequest model, ApiDbContext apiDbContext);
-        Task<string> UpdatePictureAsync(IFormFile file, int shopId, IConfiguration configuration, ApiDbContext apiDbContext);
+        Task<PictureDTO> UpdatePictureAsync(IFormFile file, int shopId, IConfiguration configuration, ApiDbContext apiDbContext);
         Task<string> AddPaymentethodAsync(ShopPaymentMethodPostRequest model, ApiDbContext apiDbContext);
         Task<string> AddAllowedPurchaseTypeAsync(ShopPurchaseTypePostRequest model, ApiDbContext apiDbContext);
         Task<int> AddUserLockedAsync(int shopId, int userId, ApiDbContext apiDbContext);
