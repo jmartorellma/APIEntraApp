@@ -163,11 +163,11 @@ namespace APIEntraApp.Services.Shops
 
                 string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                //string extension = file.ContentType.Split("/")[1];
-                //string fileName = $"{shop.Code}.{extension}";
+                string extension = file.ContentType.Split("/")[1];
+                string fileName = $"{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{extension}";
 
-                string fullPath = Path.Combine(pathToSave, file.FileName);
-                string dbPath = Path.Combine(folderName, file.FileName);
+                string fullPath = Path.Combine(pathToSave, fileName);
+                string dbPath = Path.Combine(folderName, fileName);
 
                 if (File.Exists(fullPath))
                 {
@@ -238,7 +238,7 @@ namespace APIEntraApp.Services.Shops
                     throw new Exception($"Tipo de pedido con id {model.PurchaseTypeId} no encontrado");
                 }
 
-                shop.Shop_PurchaseTypes.Add(new Shop_PurchaseType 
+                shop.Shop_PurchaseType.Add(new Shop_PurchaseType 
                 { 
                     ShopId = model.ShopId,
                     PurchaseTypeId = model.PurchaseTypeId
@@ -395,13 +395,13 @@ namespace APIEntraApp.Services.Shops
                     throw new Exception($"Tipo de pedido con id {model.PurchaseTypeId} no encontrado");
                 }
 
-                Shop_PurchaseType rel = shop.Shop_PurchaseTypes.FirstOrDefault(sp => sp.PurchaseTypeId == model.PurchaseTypeId && sp.ShopId == model.ShopId);
+                Shop_PurchaseType rel = shop.Shop_PurchaseType.FirstOrDefault(sp => sp.PurchaseTypeId == model.PurchaseTypeId && sp.ShopId == model.ShopId);
                 if (rel == null) 
                 {
                     throw new Exception($"Relación entre {shop.Name} y {purchaseType.Name} no encontrada");
                 }
 
-                shop.Shop_PurchaseTypes.Remove(rel);
+                shop.Shop_PurchaseType.Remove(rel);
 
                 await apiDbContext.SaveChangesAsync();
 

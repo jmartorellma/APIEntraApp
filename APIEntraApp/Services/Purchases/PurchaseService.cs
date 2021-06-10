@@ -37,8 +37,8 @@ namespace APIEntraApp.Services.Purchases
             {
                 return await Task.Run(() => {
 
-                    List<Purchase> userPurchaseList = apiDbContext.Purchases.Where(p => p.Purchase_Carts.FirstOrDefault(pc => pc.UserProductCart.IsCompleted && 
-                                                                                                                              pc.UserProductCart.UserId == userId) != null).ToList();
+                    List<Purchase> userPurchaseList = apiDbContext.Purchases.Where(p => p.Purchase_Cart.FirstOrDefault(pc => pc.User_Product_Cart.IsCompleted && 
+                                                                                                                              pc.User_Product_Cart.UserId == userId) != null).ToList();
                     if (userPurchaseList == null)
                     {
                         throw new Exception($"Error cargadndo el listado ce compras del usuario con id {userId}");
@@ -59,8 +59,8 @@ namespace APIEntraApp.Services.Purchases
             {
                 return await Task.Run(() => {
 
-                    List<Purchase> userPurchaseList = apiDbContext.Purchases.Where(p => p.Purchase_Carts.FirstOrDefault(pc => pc.UserProductCart.IsCompleted && 
-                                                                                                                              pc.UserProductCart.Product.ShopId == shopId) != null).ToList();
+                    List<Purchase> userPurchaseList = apiDbContext.Purchases.Where(p => p.Purchase_Cart.FirstOrDefault(pc => pc.User_Product_Cart.IsCompleted && 
+                                                                                                                              pc.User_Product_Cart.Product.ShopId == shopId) != null).ToList();
                     if (userPurchaseList == null)
                     {
                         throw new Exception($"Error cargadndo el listado ce compras de la tienda con id {shopId}");
@@ -97,7 +97,7 @@ namespace APIEntraApp.Services.Purchases
                     decimal am = apiDbContext.Users_Products_Cart.Where(pc => pc.Id == id).First().Product.Pvp;
                     amount += am;
 
-                    newPurchase.Purchase_Carts.Add(new Purchase_Cart
+                    newPurchase.Purchase_Cart.Add(new Purchase_Cart
                     {
                         Purchase = newPurchase,
                         UserProductCartId = id
@@ -157,10 +157,10 @@ namespace APIEntraApp.Services.Purchases
                     throw new Exception($"La compra no se puede modificar. Ya está completada.");
                 }
 
-                purchase.Purchase_Carts.RemoveAll(pc => !model.ProductCartIdList.Contains(pc.UserProductCartId));
-                model.ProductCartIdList.Where(mp => !purchase.Purchase_Carts.Select(s => s.PurchaseId).ToList().Contains(mp)).ToList().ForEach(pId =>
+                purchase.Purchase_Cart.RemoveAll(pc => !model.ProductCartIdList.Contains(pc.UserProductCartId));
+                model.ProductCartIdList.Where(mp => !purchase.Purchase_Cart.Select(s => s.PurchaseId).ToList().Contains(mp)).ToList().ForEach(pId =>
                 {
-                    purchase.Purchase_Carts.Add(new Purchase_Cart
+                    purchase.Purchase_Cart.Add(new Purchase_Cart
                     {
                         PurchaseId = model.Id,
                         UserProductCartId = pId
@@ -250,9 +250,9 @@ namespace APIEntraApp.Services.Purchases
 
                 // TODO - Aquí habría que implmentar la lógica de pago con TPV si la tienda permite el pago ONLINE
 
-                purchase.Purchase_Carts.ForEach(pc => 
+                purchase.Purchase_Cart.ForEach(pc => 
                 {
-                    pc.UserProductCart.IsCompleted = true;
+                    pc.User_Product_Cart.IsCompleted = true;
                 });
 
                 await apiDbContext.SaveChangesAsync();
@@ -307,7 +307,7 @@ namespace APIEntraApp.Services.Purchases
 
             List<PurchaseProductDTO> purchaseProducts = new List<PurchaseProductDTO>();
 
-            purchase.Purchase_Carts.Select(s => s.UserProductCart.Product).ToList().ForEach(product => 
+            purchase.Purchase_Cart.Select(s => s.User_Product_Cart.Product).ToList().ForEach(product => 
             {
                 purchaseProducts.Add(new PurchaseProductDTO 
                 {
@@ -322,8 +322,8 @@ namespace APIEntraApp.Services.Purchases
                 });
             });
 
-            string userName = purchase.Purchase_Carts.Select(s => s.UserProductCart.User.UserName).First();
-            int userId = purchase.Purchase_Carts.Select(s => s.UserProductCart.User.Id).First();
+            string userName = purchase.Purchase_Cart.Select(s => s.User_Product_Cart.User.UserName).First();
+            int userId = purchase.Purchase_Cart.Select(s => s.User_Product_Cart.User.Id).First();
 
             return new PurchaseDTO 
             {

@@ -19,17 +19,14 @@ namespace APIEntraApp.Services.Products
         {
             try
             {
-                return await Task.Run(() =>
+                List<ProductDTO> result = new List<ProductDTO>();
+
+                foreach(Product p in apiDbContext.Products.ToList())
                 {
-                    List<ProductDTO> result = new List<ProductDTO>();
+                    result.Add(await ModelToDTOAsync(p, apiDbContext));
+                };
 
-                    apiDbContext.Products.ToList().ForEach(p =>
-                    {
-                        result.Add(ModelToDTO(p));
-                    });
-
-                    return result;
-                });
+                return result;
             }
             catch(Exception e) 
             {
@@ -47,7 +44,7 @@ namespace APIEntraApp.Services.Products
                     throw new Exception($"Producto con id {id} no encontrado");
                 }
 
-                return ModelToDTO(product);
+                return await ModelToDTOAsync(product, apiDbContext);
             }
             catch (Exception e)
             {
@@ -61,21 +58,18 @@ namespace APIEntraApp.Services.Products
             {
                 List<ProductDTO> result = new List<ProductDTO>();   
 
-                List<Product> productList = apiDbContext.Products.Where(p => p.ShopId == shopId).ToList();
+                List<Product> productList = apiDbContext.Products.Where(p => p.Shop.Id == shopId).ToList();
                 if (!productList.Any())
                 {
                     return result;
                 }
 
-                return await Task.Run(() =>
+                foreach (Product p in productList)
                 {
-                    productList.ForEach(p =>
-                    {
-                        result.Add(ModelToDTO(p));
-                    });
+                    result.Add(await ModelToDTOAsync(p, apiDbContext));
+                };
 
-                    return result;
-                });
+                return result;
             }
             catch (Exception e)
             {
@@ -93,6 +87,18 @@ namespace APIEntraApp.Services.Products
                     throw new Exception($"Ya existe un producto con el código {model.Code}");
                 }
 
+                Shop shop = await apiDbContext.Shops.FindAsync(model.ShopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda del producto no encontrada");
+                }
+
+                Provider provider = await apiDbContext.Providers.FindAsync(model.ProviderId);
+                if (provider == null)
+                {
+                    throw new Exception($"Proveedor no encontrado");
+                }
+
                 Stock stock = new Stock
                 {
                     Avaliable = model.Stock,
@@ -108,26 +114,38 @@ namespace APIEntraApp.Services.Products
                     Price = model.Price,
                     Tax= model.Tax,
                     Pvp = model.Pvp,
+                    Picture = string.Empty,
                     CreationDate = DateTime.Now,
-                    ShopId = model.ShopId,
-                    ProviderId = model.ProviderId,
+                    Shop = shop,
+                    Provider = provider,
                     Stock = stock
                 };
 
-                model.CategoryIdList.ForEach(id => 
+                newProduct.Product_Category = new List<Product_Category>();
+                newProduct.User_Product_Cart = new List<User_Product_Cart>();
+                newProduct.User_Product_Favorite = new List<User_Product_Favorite>();
+                newProduct.User_Product_Rating = new List<User_Product_Rating>();
+
+                foreach(int id in model.CategoryIdList)
                 {
-                    newProduct.Product_Categories.Add(new Product_Category
+                    Category category = await apiDbContext.Categories.FindAsync(id);
+                    if (category == null)
                     {
-                        CategoryId = id,
+                        throw new Exception($"Categoría no encontrada");
+                    }
+
+                    newProduct.Product_Category.Add(new Product_Category
+                    {
+                        Category = category,
                         Product = newProduct
                     });
-                });                
+                }                
 
                 await apiDbContext.Products.AddAsync(newProduct);
                 
                 await apiDbContext.SaveChangesAsync();
 
-                return ModelToDTO(newProduct);
+                return await ModelToDTOAsync(newProduct, apiDbContext);
             }
             catch (Exception e)
             {
@@ -135,7 +153,7 @@ namespace APIEntraApp.Services.Products
             }
         }
 
-        public async Task<string> UpdatePictureAsync(IFormFile file, int productID, IConfiguration configuration, ApiDbContext apiDbContext)
+        public async Task<ProductPictureDTO> UpdatePictureAsync(IFormFile file, int productID, IConfiguration configuration, ApiDbContext apiDbContext)
         {
             try
             {
@@ -151,7 +169,8 @@ namespace APIEntraApp.Services.Products
 
                 string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                string fileName = string.Join("-", product.Shop.Code, product.Code);
+                string extension = file.ContentType.Split("/")[1];
+                string fileName = $"{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{extension}";
 
                 string fullPath = Path.Combine(pathToSave, fileName);
                 string dbPath = Path.Combine(folderName, fileName);
@@ -168,7 +187,11 @@ namespace APIEntraApp.Services.Products
                 product.Picture = dbPath;
                 await apiDbContext.SaveChangesAsync();
 
-                return dbPath;
+                return new ProductPictureDTO 
+                { 
+                    FilePath = dbPath,
+                    ProductId = productID
+                };
             }
             catch (Exception e)
             {
@@ -192,15 +215,40 @@ namespace APIEntraApp.Services.Products
                     throw new Exception($"Ya existe un producto con el código {model.Code}");
                 }
 
-                product.Product_Categories.RemoveAll(pc => !model.CategoryIdList.Contains(pc.CategoryId));
-                model.CategoryIdList.Where(mc => !product.Product_Categories.Select(s => s.CategoryId).ToList().Contains(mc)).ToList().ForEach(catId => 
+                List<Product_Category> rel = product.Product_Category;
+                if (rel == null)
                 {
-                    product.Product_Categories.Add(new Product_Category
+                    rel = apiDbContext.Products_Categories.Where(pc => pc.ProductId == product.Id).ToList();
+                }
+
+                product.Product_Category = rel;
+
+                product.Product_Category.RemoveAll(pc => !model.CategoryIdList.Contains(pc.CategoryId));
+                foreach (int id in model.CategoryIdList.Where(mc => !product.Product_Category.Select(s => s.CategoryId).ToList().Contains(mc)).ToList())
+                {
+                    Category category = await apiDbContext.Categories.FindAsync(id);
+                    if (category == null)
                     {
-                        ProductId = product.Id,
-                        CategoryId = catId
+                        throw new Exception($"Categoría no encontrada");
+                    }
+
+                    product.Product_Category.Add(new Product_Category
+                    {
+                        Category = category,
+                        Product = product
                     });
-                });
+                }
+
+                Stock stock = product.Stock;
+                if (stock == null)
+                {
+                    stock = apiDbContext.Stocks.Where(s => s.Id == product.StockId).FirstOrDefault();
+                    if (stock == null)
+                    {
+                        throw new Exception($"Stock no encontrado");
+                    }
+                    product.Stock = stock;
+                }
 
                 if (product.Stock.Avaliable != model.Stock) 
                 {
@@ -218,7 +266,7 @@ namespace APIEntraApp.Services.Products
 
                 await apiDbContext.SaveChangesAsync();
 
-                return ModelToDTO(product);
+                return await ModelToDTOAsync(product, apiDbContext);
             }
             catch (Exception e)
             {
@@ -236,7 +284,22 @@ namespace APIEntraApp.Services.Products
                     throw new Exception($"Producto con id {id} no encontrado");
                 }
 
+                List<Product_Category> rel = apiDbContext.Products_Categories.Where(pc => pc.ProductId == product.Id).ToList();
+                if (rel != null)
+                {
+                    rel.ForEach(r => 
+                    {
+                        apiDbContext.Products_Categories.Remove(r);
+                    });
+                    
+                }
                 apiDbContext.Products.Remove(product);
+                Stock stock = apiDbContext.Stocks.Where(s => s.Id == product.StockId).FirstOrDefault();
+                if (stock != null)
+                {
+                    apiDbContext.Stocks.Remove(stock);
+                }
+
                 await apiDbContext.SaveChangesAsync();
 
                 return product.Id;
@@ -249,8 +312,41 @@ namespace APIEntraApp.Services.Products
 
         #region Support Methods
 
-        private ProductDTO ModelToDTO(Product product) 
+        private async Task<ProductDTO> ModelToDTOAsync(Product product, ApiDbContext apiDbContext)
         {
+            Shop shop = await apiDbContext.Shops.FindAsync(product.ShopId);
+            if (shop == null)
+            {
+                throw new Exception($"Tienda no encontrada");
+            }
+
+            Provider provider = product.Provider;
+            if (provider == null) 
+            { 
+                provider = apiDbContext.Providers.Where(p => p.Id == product.ProviderId).FirstOrDefault();
+                if (provider == null) 
+                {
+                    throw new Exception($"Proveedor no encontrado");
+                }
+            }
+
+            Stock stock = product.Stock;
+            if (stock == null)
+            {
+                stock = apiDbContext.Stocks.Where(s => s.Id == product.StockId).FirstOrDefault();
+                if (stock == null)
+                {
+                    throw new Exception($"Stock no encontrado");
+                }
+            }
+
+            List<Product_Category> rel = product.Product_Category;
+
+            if (rel == null) 
+            {
+                rel = apiDbContext.Products_Categories.Where(pc => pc.ProductId == product.Id).ToList();
+            }
+
             return new ProductDTO
             {
                 Id = product.Id,
@@ -263,11 +359,11 @@ namespace APIEntraApp.Services.Products
                 Pvp = product.Pvp,
                 Picture = product.Picture,
                 CreationDate = product.CreationDate,
-                ShopId = product.Shop.Id,
-                ShopName = product.Shop.Name,
-                ProviderId = product.ProviderId,
+                ShopId = shop.Id,
+                ShopName = shop.Name,
+                ProviderId = product.Provider.Id,
                 Stock = product.Stock.Avaliable,
-                Categories = product.Product_Categories.Select(s => s.Category.Code).ToList()
+                Categories = rel.Select(s => s.CategoryId).ToList()
             };
         }
 

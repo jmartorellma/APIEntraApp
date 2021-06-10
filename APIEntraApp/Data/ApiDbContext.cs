@@ -38,13 +38,15 @@ namespace APIEntraApp.Data
                .HasOne(u => u.Sender)
                .WithMany(u => u.MessagesSent)
                .HasForeignKey(ui => ui.FromId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Restrict)
+               .IsRequired();
 
             builder.Entity<Message>()
                 .HasOne(s => s.Reciever)
                 .WithMany(u => u.MessagesRecived)
                 .HasForeignKey(si => si.ToId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Shop>()
                .Property(s => s.Taxes).HasPrecision(18, 2);
@@ -57,30 +59,34 @@ namespace APIEntraApp.Data
 
             builder.Entity<User_Shop_Favorite>()
                 .HasOne(u => u.User)
-                .WithMany(us => us.User_Shop_Favorites)
+                .WithMany(us => us.User_Shop_Favorite)
                 .HasForeignKey(ui => ui.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Shop_Favorite>()
                 .HasOne(s => s.Shop)
-                .WithMany(us => us.User_Shop_Favorites)
+                .WithMany(us => us.User_Shop_Favorite)
                 .HasForeignKey(si => si.ShopId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Shop_Rating>()
                 .HasKey(k => new { k.UserId, k.ShopId });
 
             builder.Entity<User_Shop_Rating>()
                 .HasOne(u => u.User)
-                .WithMany(us => us.User_Shop_Ratings)
+                .WithMany(us => us.User_Shop_Rating)
                 .HasForeignKey(ui => ui.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Shop_Rating>()
                 .HasOne(s => s.Shop)
-                .WithMany(us => us.User_Shop_Ratings)
+                .WithMany(us => us.User_Shop_Rating)
                 .HasForeignKey(si => si.ShopId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Shop_Locked>()
                 .HasKey(k => new { k.UserId, k.ShopId });
@@ -89,28 +95,32 @@ namespace APIEntraApp.Data
                 .HasOne(u => u.User)
                 .WithMany(us => us.User_Shop_Locked)
                 .HasForeignKey(ui => ui.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Shop_Locked>()
                 .HasOne(s => s.Shop)
                 .WithMany(us => us.User_Shop_Locked)
                 .HasForeignKey(si => si.ShopId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Shop_PurchaseType>()
                 .HasKey(k => new { k.ShopId, k.PurchaseTypeId });
 
             builder.Entity<Shop_PurchaseType>()
                 .HasOne(s => s.Shop)
-                .WithMany(sp => sp.Shop_PurchaseTypes)
+                .WithMany(sp => sp.Shop_PurchaseType)
                 .HasForeignKey(sp => sp.ShopId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Shop_PurchaseType>()
                 .HasOne(p => p.PurcahseType)
-                .WithMany(ps => ps.Shops_PurchaseType)
+                .WithMany(ps => ps.Shop_PurchaseType)
                 .HasForeignKey(sp => sp.PurchaseTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Product>()
                .Property(p => p.Price).HasPrecision(18,2);
@@ -126,54 +136,62 @@ namespace APIEntraApp.Data
 
             builder.Entity<User_Product_Favorite>()
                 .HasOne(u => u.User)
-                .WithMany(us => us.User_Product_Favorites)
+                .WithMany(us => us.User_Product_Favorite)
                 .HasForeignKey(ui => ui.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Product_Favorite>()
                 .HasOne(s => s.Product)
-                .WithMany(us => us.User_Product_Favorites)
+                .WithMany(us => us.User_Product_Favorite)
                 .HasForeignKey(si => si.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Product_Rating>()
                .HasOne(u => u.User)
-               .WithMany(us => us.User_Product_Ratings)
+               .WithMany(us => us.User_Product_Rating)
                .HasForeignKey(ui => ui.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Restrict)
+               .IsRequired();
 
             builder.Entity<User_Product_Rating>()
                 .HasOne(s => s.Product)
-                .WithMany(us => us.User_Product_Ratings)
+                .WithMany(us => us.User_Product_Rating)
                 .HasForeignKey(si => si.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Product_Category>()
               .HasKey(k => new { k.ProductId, k.CategoryId });
 
             builder.Entity<Product_Category>()
                 .HasOne(u => u.Product)
-                .WithMany(us => us.Product_Categories)
+                .WithMany(us => us.Product_Category)
                 .HasForeignKey(ui => ui.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Product_Category>()
                 .HasOne(s => s.Category)
-                .WithMany(us => us.Products_Category)
+                .WithMany(us => us.Product_Category)
                 .HasForeignKey(si => si.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<User_Product_Cart>()
                .HasOne(u => u.User)
-               .WithMany(us => us.User_Products_Cart)
+               .WithMany(us => us.User_Product_Cart)
                .HasForeignKey(ui => ui.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Restrict)
+               .IsRequired();
 
             builder.Entity<User_Product_Cart>()
                 .HasOne(s => s.Product)
-                .WithMany(us => us.Users_Product_Cart)
+                .WithMany(us => us.User_Product_Cart)
                 .HasForeignKey(si => si.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Purchase>()
                .Property(p => p.Amount).HasPrecision(18, 2);
@@ -183,15 +201,17 @@ namespace APIEntraApp.Data
 
             builder.Entity<Purchase_Cart>()
                 .HasOne(u => u.Purchase)
-                .WithMany(us => us.Purchase_Carts)
+                .WithMany(us => us.Purchase_Cart)
                 .HasForeignKey(ui => ui.PurchaseId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Purchase_Cart>()
-                .HasOne(s => s.UserProductCart)
-                .WithMany(us => us.Purchases_Cart)
+                .HasOne(s => s.User_Product_Cart)
+                .WithMany(us => us.Purchase_Cart)
                 .HasForeignKey(si => si.UserProductCartId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             builder.Entity<Delivery>()
                .Property(p => p.DeliveryTaxes).HasPrecision(18, 2);

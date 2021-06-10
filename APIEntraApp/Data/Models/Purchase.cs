@@ -24,7 +24,7 @@ namespace APIEntraApp.Data.Models
         public PurchaseType PurchaseType { get; set; }
         public int PaymentStatusId { get; set; }
         public PaymentStatus PaymentStatus { get; set; }
-        public List<Purchase_Cart> Purchase_Carts { get; set; }
+        public List<Purchase_Cart> Purchase_Cart { get; set; }
     }
     
 }

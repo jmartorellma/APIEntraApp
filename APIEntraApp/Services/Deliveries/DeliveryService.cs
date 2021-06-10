@@ -34,7 +34,7 @@ namespace APIEntraApp.Services.Deliveries
         {
             try
             {
-                return await Task.Run(() => apiDbContext.Deliveries.Where(d => d.Purchase.Purchase_Carts.FirstOrDefault(pc => pc.UserProductCart.UserId == id) != null).ToList()
+                return await Task.Run(() => apiDbContext.Deliveries.Where(d => d.Purchase.Purchase_Cart.FirstOrDefault(pc => pc.User_Product_Cart.UserId == id) != null).ToList()
                                                                    .Select(s => ModelToDTO(s)).ToList());
             }
             catch (Exception e)
@@ -47,7 +47,7 @@ namespace APIEntraApp.Services.Deliveries
         {
             try
             {
-                return await Task.Run(() => apiDbContext.Deliveries.Where(d => d.Purchase.Purchase_Carts.FirstOrDefault(pc => pc.UserProductCart.Product.ShopId == id) != null).ToList()
+                return await Task.Run(() => apiDbContext.Deliveries.Where(d => d.Purchase.Purchase_Cart.FirstOrDefault(pc => pc.User_Product_Cart.Product.ShopId == id) != null).ToList()
                                                                    .Select(s => ModelToDTO(s)).ToList());
             }
             catch (Exception e)

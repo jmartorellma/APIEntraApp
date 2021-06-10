@@ -16,7 +16,7 @@ namespace APIEntraApp.Data.Models
         public DateTime CreationDate { get; set; }
 
         //Navigation Properties
-        public List<Product_Category> Products_Category { get; set; }
+        public List<Product_Category> Product_Category { get; set; }
     }
     
 }

@@ -18,7 +18,7 @@ namespace APIEntraApp.Services.Products.Models.DTOs
         public int          ShopId       { get; set; }
         public string       ShopName     { get; set; }
         public int          ProviderId   { get; set; }
-        public List<string> Categories   { get; set; }
+        public List<int>    Categories   { get; set; }
         public int          Stock        { get; set; }
     }
 }

@@ -108,7 +108,7 @@ namespace APIEntraApp.Controllers
                 
         [HttpPost("Picture")]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
-        public async Task<IActionResult> UpdatePicture(ProductPicturePostRequest model) 
+        public async Task<IActionResult> UpdatePicture() 
         {
             try
             {
@@ -118,18 +118,25 @@ namespace APIEntraApp.Controllers
                 }
 
                 IFormCollection formCollection = await Request.ReadFormAsync();
-                if (formCollection == null || !formCollection.Any())
+                if (formCollection == null || !formCollection.Files.Any())
                 {
                     throw new Exception("No se ha encontrado la imagen en la llamada");
                 }
 
                 IFormFile file = formCollection.Files.First();
-                if (file == null || file.Length == 0) 
+                if (file == null || file.Length == 0)
                 {
                     throw new Exception("No se ha encontrado la imagen en la llamada");
                 }
 
-                return Ok(await _productService.UpdatePictureAsync(file, model.ProductId, _configuration, _apiDbContext));
+                string productId = Request.Headers["productId"];
+
+                if (string.IsNullOrWhiteSpace(productId))
+                {
+                    throw new Exception("No se ha encontrado la tienda en la llamada");
+                }
+
+                return Ok(await _productService.UpdatePictureAsync(file, int.Parse(productId), _configuration, _apiDbContext));
             }
             catch (Exception e)
             {

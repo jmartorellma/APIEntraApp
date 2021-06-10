@@ -37,12 +37,12 @@ namespace APIEntraApp.Data.Models
         //Navigation Properties
         public int OwnerId { get; set; }
         public ApplicationUser Owner { get; set; }
-        public List<User_Shop_Favorite> User_Shop_Favorites { get; set; }
-        public List<User_Shop_Rating> User_Shop_Ratings { get; set; }
+        public List<User_Shop_Favorite> User_Shop_Favorite { get; set; }
+        public List<User_Shop_Rating> User_Shop_Rating { get; set; }
         public List<User_Shop_Locked> User_Shop_Locked { get; set; }
         public List<Product> Products { get; set; }
         public List<PaymentMethod> AllowedPaymentMethods { get; set; }
-        public List<Shop_PurchaseType> Shop_PurchaseTypes { get; set; }
+        public List<Shop_PurchaseType> Shop_PurchaseType { get; set; }
     }
     
 }

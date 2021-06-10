@@ -6,6 +6,6 @@
         public Purchase Purchase { get; set; }
 
         public int UserProductCartId { get; set; }
-        public User_Product_Cart UserProductCart { get; set; }
+        public User_Product_Cart User_Product_Cart { get; set; }
     }
 }

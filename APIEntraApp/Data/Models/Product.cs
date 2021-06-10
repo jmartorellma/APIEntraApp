@@ -33,10 +33,10 @@ namespace APIEntraApp.Data.Models
         public Provider Provider { get; set; }
         public int StockId { get; set; }
         public Stock Stock { get; set; }
-        public List<User_Product_Favorite> User_Product_Favorites { get; set; }
-        public List<User_Product_Rating> User_Product_Ratings { get; set; }
-        public List<Product_Category> Product_Categories { get; set; }
-        public List<User_Product_Cart> Users_Product_Cart { get; set; }
+        public List<User_Product_Favorite> User_Product_Favorite { get; set; }
+        public List<User_Product_Rating> User_Product_Rating { get; set; }
+        public List<Product_Category> Product_Category { get; set; }
+        public List<User_Product_Cart> User_Product_Cart { get; set; }
     }
     
 }

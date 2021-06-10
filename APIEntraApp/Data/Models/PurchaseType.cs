@@ -16,7 +16,7 @@ namespace APIEntraApp.Data.Models
         public DateTime CreationDate { get; set; }
 
         // Navigation properties
-        public List<Shop_PurchaseType> Shops_PurchaseType { get; set; }
+        public List<Shop_PurchaseType> Shop_PurchaseType { get; set; }
     }
     
 }

@@ -131,7 +131,7 @@ namespace APIEntraApp.Controllers
 
         [HttpPost("Picture")]
         [Authorize(Roles = "SuperUser,Admin,Shop")]
-        public async Task<IActionResult> UpdatePicture() //ShopPicturePostRequest model
+        public async Task<IActionResult> UpdatePicture()
         {
             try
             {
@@ -152,10 +152,8 @@ namespace APIEntraApp.Controllers
                     throw new Exception("No se ha encontrado la imagen en la llamada");
                 }
 
-                //Microsoft.Extensions.Primitives.StringValues shopId;
-                //Request.Headers.TryGetValue("shopId", out shopId);
                 string shopId = Request.Headers["shopId"];
-                // string shopId = formCollection[formCollection.Keys.First()];
+                
                 if (string.IsNullOrWhiteSpace(shopId))
                 {
                     throw new Exception("No se ha encontrado la tienda en la llamada");

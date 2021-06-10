@@ -21,6 +21,6 @@ namespace APIEntraApp.Data.Models
         public ApplicationUser User { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
-        public List<Purchase_Cart> Purchases_Cart { get; set; }
+        public List<Purchase_Cart> Purchase_Cart { get; set; }
     }
 }
