@@ -11,6 +11,8 @@ using APIEntraApp.Data.Identity;
 using APIEntraApp.Services.Shops.Core;
 using APIEntraApp.Services.Shops.Models.DTOs;
 using APIEntraApp.Services.Shops.Models.Request;
+using APIEntraApp.Services.Users.Models.DTOs;
+using Microsoft.AspNetCore.Identity;
 
 namespace APIEntraApp.Services.Shops
 {
@@ -68,6 +70,31 @@ namespace APIEntraApp.Services.Shops
                 }
 
                 return await ModelToDTOAsync(shop, apiDbContext);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public async Task<List<UserDTO>> GetLockedAsync(int shopId, ApiDbContext apiDbContext, UserManager<ApplicationUser> userManager)
+        {
+            try
+            {
+                Shop shop = await apiDbContext.Shops.FindAsync(shopId);
+                if (shop == null)
+                {
+                    throw new Exception($"Tienda con id {shopId} no encontrada");
+                }
+
+                List<UserDTO> result = new List<UserDTO>();
+
+                foreach (User_Shop_Locked item in shop.User_Shop_Locked) 
+                {
+                    result.Add(await UserModelToDTOAsync(item.User, userManager));
+                }                
+
+                return result;
             }
             catch (Exception e)
             {
@@ -436,6 +463,28 @@ namespace APIEntraApp.Services.Shops
                 Owner = user.UserName,
                 OwnerId = user.Id,
                 CreationDate = shop.CreationDate
+            };
+        }
+
+        private async Task<UserDTO> UserModelToDTOAsync(ApplicationUser user, UserManager<ApplicationUser> userManager)
+        {
+            IList<string> roleList = await userManager.GetRolesAsync(user);
+            if (roleList == null || !roleList.Any())
+            {
+                throw new Exception($"Rol del usuario {user.UserName} no encontrado");
+            }
+
+            return new UserDTO
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Surname = user.Surname,
+                IsActive = user.IsActive,
+                UserName = user.UserName,
+                Email = user.Email,
+                Role = roleList.First(), // Los usuarios solo tendran un rol
+                PhoneNumber = user.PhoneNumber,
+                CreationDate = user.CreationDate
             };
         }
 

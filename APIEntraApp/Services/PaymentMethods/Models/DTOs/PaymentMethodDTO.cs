@@ -8,6 +8,7 @@ namespace APIEntraApp.Services.PaymentMethods.Models.DTOs
         public string   Code         { get; set; }
         public string   Name         { get; set; }
         public string   Value        { get; set; }
+        public int      ShopId       { get; set; }
         public DateTime CreationDate { get; set; }
     }
 }

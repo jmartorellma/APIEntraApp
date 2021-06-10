@@ -257,7 +257,7 @@ namespace APIEntraApp.Services.Purchases
 
                 await apiDbContext.SaveChangesAsync();
 
-                await SendMail(purchase.Purchase_Carts.Select(s => s.UserProductCart).ToList());
+                // TODO - await SendMail(purchase.Purchase_Carts.Select(s => s.UserProductCart).ToList());
 
                 return ModelToDTO(purchase);
             }
@@ -323,24 +323,28 @@ namespace APIEntraApp.Services.Purchases
             });
 
             string userName = purchase.Purchase_Carts.Select(s => s.UserProductCart.User.UserName).First();
+            int userId = purchase.Purchase_Carts.Select(s => s.UserProductCart.User.Id).First();
 
             return new PurchaseDTO 
             {
-               ProductList = purchaseProducts,
-               Amount = purchase.Amount,
-               UserName = userName,
-               StatusDate = purchase.StatusDate,
-               CreationDate = purchase.StatusDate,
-               PaymentMethod = purchase.PaymentMethod.Name,
-               PurchaseType = purchase.PurchaseType.Name,
-               PaymentStatus = purchase.PaymentStatus.Name
+                Id = purchase.Id,
+                ProductList = purchaseProducts,
+                Code = purchase.Code,
+                Amount = purchase.Amount,
+                UserName = userName,
+                UserId = userId,
+                StatusDate = purchase.StatusDate,
+                CreationDate = purchase.StatusDate,
+                PaymentMethod = purchase.PaymentMethod.Name,
+                PurchaseType = purchase.PurchaseType.Name,
+                PaymentStatus = purchase.PaymentStatus.Name
             };
         }
 
-        private async Task SendMail(List<User_Product_Cart> productCartList) 
-        { 
-            // TODO - Enviar correo de resumen de compra al usuario
-        }
+        //private async Task SendMail(List<User_Product_Cart> productCartList) 
+        //{ 
+        //    // TODO - Enviar correo de resumen de compra al usuario
+        //}
 
         #endregion Support Methods
     }

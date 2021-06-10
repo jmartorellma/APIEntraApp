@@ -15,6 +15,10 @@ namespace APIEntraApp.Data.Models
         public string   Value        { get; set; }
         [Required]
         public DateTime CreationDate { get; set; }
+
+        //Navigation properties
+        public Shop Shop { get; set; }
+        public int ShopId { get; set; }
     }
     
 }

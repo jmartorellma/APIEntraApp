@@ -56,8 +56,8 @@ namespace APIEntraApp.Services.PaymentMethods
         {
             try
             {
-                var productFound = apiDbContext.PaymentMethods.FirstOrDefault(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
-                if (productFound != null)
+                var paymentMethodFound = apiDbContext.PaymentMethods.FirstOrDefault(p => p.Code.ToUpper().Trim().Equals(model.Code.ToUpper().Trim()));
+                if (paymentMethodFound != null)
                 {
                     throw new Exception($"Ya existe un método de pago con el código {model.Code}");
                 }
@@ -67,7 +67,8 @@ namespace APIEntraApp.Services.PaymentMethods
                     Code = model.Code,
                     Name = model.Name,
                     Value = model.Value,
-                    CreationDate = DateTime.Now
+                    CreationDate = DateTime.Now,
+                    ShopId = model.ShopId
                 };
 
                 await apiDbContext.PaymentMethods.AddAsync(newPaymentMethod);
@@ -143,6 +144,7 @@ namespace APIEntraApp.Services.PaymentMethods
                 Code = paymentMethod.Code,
                 Name = paymentMethod.Name,
                 Value = paymentMethod.Value,
+                ShopId = paymentMethod.ShopId,
                 CreationDate = paymentMethod.CreationDate
             };
         }

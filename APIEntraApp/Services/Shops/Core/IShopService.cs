@@ -5,6 +5,9 @@ using Microsoft.Extensions.Configuration;
 using APIEntraApp.Data;
 using APIEntraApp.Services.Shops.Models.DTOs;
 using APIEntraApp.Services.Shops.Models.Request;
+using Microsoft.AspNetCore.Identity;
+using APIEntraApp.Data.Identity;
+using APIEntraApp.Services.Users.Models.DTOs;
 
 namespace APIEntraApp.Services.Shops.Core
 {
@@ -13,6 +16,7 @@ namespace APIEntraApp.Services.Shops.Core
         Task<List<ShopDTO>> GetAllAsync(ApiDbContext apiDbContext);
         Task<ShopDTO> GetByIdAsync(int id, ApiDbContext apiDbContext);
         Task<ShopDTO> GetByOwnerIdAsync(int ownerId, ApiDbContext apiDbContext);
+        Task<List<UserDTO>> GetLockedAsync(int shopId, ApiDbContext apiDbContext, UserManager<ApplicationUser> userManager);
         Task<ShopDTO> CreateAsync(ShopPostRequest model, ApiDbContext apiDbContext);
         Task<PictureDTO> UpdatePictureAsync(IFormFile file, int shopId, IConfiguration configuration, ApiDbContext apiDbContext);
         Task<string> AddPaymentethodAsync(ShopPaymentMethodPostRequest model, ApiDbContext apiDbContext);

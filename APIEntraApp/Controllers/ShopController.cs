@@ -20,13 +20,16 @@ namespace APIEntraApp.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly IShopService _shopService;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApiDbContext _apiDbContext;
         public ShopController(
             IConfiguration configuration,
+            UserManager<ApplicationUser> userManager,
             ApiDbContext apiDbContext,
             IShopService shopService)
         {
             _configuration = configuration;
+            _userManager = userManager;
             _apiDbContext = apiDbContext;
             _shopService = shopService;
         }
@@ -81,6 +84,25 @@ namespace APIEntraApp.Controllers
                 }
 
                 return Ok(await _shopService.GetByOwnerIdAsync(id, _apiDbContext));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+        
+        [HttpGet("Locked/{id}")]
+        [Authorize(Roles = "SuperUser,Admin,Shop")]
+        public async Task<IActionResult> GetLockedUsers(int id)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    throw new Exception("Petición inválida");
+                }
+
+                return Ok(await _shopService.GetLockedAsync(id, _apiDbContext, _userManager));
             }
             catch (Exception e)
             {
